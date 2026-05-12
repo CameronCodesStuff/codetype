@@ -207,6 +207,8 @@
   .char.free { color: #a78bfa; }           /* user's own freeform content */
   .char.free-placeholder { color: #2a2a3a; font-style: italic; } /* dim placeholder */
   .freeform-label { font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.6rem; color: #4a3a6a; letter-spacing: 0.05em; margin-left: 8px; align-self: center; white-space: nowrap; user-select: none; }
+  .optional-label { font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.58rem; color: #2a4a2a; letter-spacing: 0.05em; margin-left: 8px; align-self: center; white-space: nowrap; user-select: none; border: 1px solid #1a3a1a; padding: 1px 5px; border-radius: 2px; }
+  .char.optional { color: #2a4a2a; }  /* dim green for optional comment lines */
 
   .mode-card:hover .phase-status { color: var(--white); }
   .mode-card .phase-status { transition: color 0.2s; }
@@ -1045,6 +1047,174 @@ const TEMPLATES = [
         ]
       }
     ]
+  },
+
+  // ══════════════════════════════════════════════════
+  // TEMPLATE 4: PARTICLE FIELD
+  // ══════════════════════════════════════════════════
+  {
+    id: 'particle-field',
+    title: 'Particle Field',
+    desc: 'A canvas particle simulation — your cursor pushes particles around. Configure colours, speed, count, and physics.',
+    tags: ['html', 'js', 'canvas', 'intermediate'],
+    phases: [
+      {
+        id: 'pf-html', name: 'Particle Field', type: 'html', icon: '✨',
+        filename: 'index.html',
+        desc: 'One self-contained file — HTML boilerplate, then all the particle logic in a single script.',
+        lines: [
+          { text: '<!DOCTYPE html>' },
+          { text: '<html lang="en">' },
+          { text: '<head>' },
+          { text: '  <meta charset="UTF-8">' },
+          { text: '  <title>', freeform: true, prefix: '  <title>', suffix: '</title>', placeholder: 'Particle Field',
+            tip: { title: '🔖 Title', body: 'Name your particle effect whatever you like.' }},
+          { text: '  <style>' },
+          { text: '    * { margin: 0; padding: 0; box-sizing: border-box; }' },
+          { text: '    body { background: #000; overflow: hidden; }',
+            tip: { title: '🖤 Black background', body: '<code>overflow: hidden</code> prevents scrollbars appearing when the canvas fills the window.' }},
+          { text: '    canvas { display: block; }' },
+          { text: '  </style>' },
+          { text: '</head>' },
+          { text: '<body>' },
+          { text: '  <canvas id="c"></canvas>' },
+          { text: '  <script>' },
+          { text: '' },
+          { text: '  // ── SETTINGS ──────────────────────────────────',
+            optional: true,
+            tip: { title: '⚙️ Settings block', body: 'This is the most important section. Every constant here controls how the particles look and behave — change these values to customise the effect.' }},
+          { text: '  // Change these to customise your particle field!', optional: true },
+          { text: '' },
+          { text: '  const COUNT  = 120;', freeform: true, prefix: '  const COUNT  = ', suffix: ';', placeholder: '120',
+            tip: { title: '🔢 COUNT — number of particles', body: 'How many particles exist at once. 80–200 is a good range. Higher = denser but slower on old hardware. Try 50 for minimal, 300 for a blizzard.' },
+            annotation: { title: 'COUNT', body: 'Total number of particles on screen at once.', example: 'const COUNT = 50;   // sparse\nconst COUNT = 120;  // balanced\nconst COUNT = 300;  // dense blizzard' }},
+          { text: '  const SPEED  = 1.2;', freeform: true, prefix: '  const SPEED  = ', suffix: ';', placeholder: '1.2',
+            tip: { title: '💨 SPEED — base movement speed', body: 'How fast particles drift naturally. 0.5 = slow drift, 2 = fast. Decimals work — try 0.8 for a calm flow.' },
+            annotation: { title: 'SPEED', body: 'Base drift speed of each particle.', example: 'const SPEED = 0.5;  // slow drift\nconst SPEED = 1.2;  // balanced\nconst SPEED = 3;    // frenetic' }},
+          { text: '  const RADIUS = 2.5;', freeform: true, prefix: '  const RADIUS = ', suffix: ';', placeholder: '2.5',
+            tip: { title: '⚪ RADIUS — particle size', body: 'The drawn size of each particle in pixels. 1 = tiny dot, 5 = large blob. Try mixing with COUNT — many small particles looks like stars.' },
+            annotation: { title: 'RADIUS', body: 'Size of each particle circle in pixels.', example: 'const RADIUS = 1;   // star-like\nconst RADIUS = 2.5; // balanced\nconst RADIUS = 6;   // chunky blobs' }},
+          { text: '  const PUSH   = 120;', freeform: true, prefix: '  const PUSH   = ', suffix: ';', placeholder: '120',
+            tip: { title: '🖱️ PUSH — cursor influence radius', body: 'How far (in pixels) the cursor pushes particles. 80 = tight repulsion, 200 = wide field. Larger feels like a force field.' },
+            annotation: { title: 'PUSH', body: 'Pixel radius around the cursor that repels particles.', example: 'const PUSH = 60;   // tight\nconst PUSH = 120;  // balanced\nconst PUSH = 250;  // wide force field' }},
+          { text: '  const FORCE  = 6;', freeform: true, prefix: '  const FORCE  = ', suffix: ';', placeholder: '6',
+            tip: { title: '💥 FORCE — repulsion strength', body: 'How hard particles are pushed away. 3 = gentle nudge, 10 = explosive. Works with PUSH — a small PUSH + large FORCE = tight blast.' },
+            annotation: { title: 'FORCE', body: 'Strength of the cursor\'s push on particles.', example: 'const FORCE = 2;   // gentle nudge\nconst FORCE = 6;   // solid push\nconst FORCE = 15;  // explosive' }},
+          { text: '  const FRICTION = 0.92;', freeform: true, prefix: '  const FRICTION = ', suffix: ';', placeholder: '0.92',
+            tip: { title: '🛑 FRICTION — how fast they slow down', body: 'A multiplier applied each frame to velocity. 0.99 = almost no friction (glides forever), 0.85 = snappy. Stay between 0.8 and 0.99.' },
+            annotation: { title: 'FRICTION', body: 'Velocity multiplier per frame — controls how quickly pushed particles slow back down.', example: 'const FRICTION = 0.99;  // icy, glides\nconst FRICTION = 0.92;  // balanced\nconst FRICTION = 0.80;  // snappy' }},
+          { text: '  const COLOUR = \'#ffffff\';', freeform: true, prefix: '  const COLOUR = ', suffix: ';', placeholder: "'#ffffff'",
+            tip: { title: '🎨 COLOUR — particle colour', body: 'Any CSS colour string. Put it in quotes. Try a hex code, rgb(), or a named colour. You can also use the special values below.' },
+            annotation: { title: 'COLOUR', body: 'Colour of every particle. Use any CSS colour string in quotes.', example: "const COLOUR = '#ffffff';      // white\nconst COLOUR = '#60a5fa';      // sky blue\nconst COLOUR = 'rgba(255,200,50,0.8)'; // gold transparent\nconst COLOUR = 'hsl(280,80%,70%)';     // purple" }},
+          { text: '  const LINES  = true;', freeform: true, prefix: '  const LINES  = ', suffix: ';', placeholder: 'true',
+            tip: { title: '🕸️ LINES — draw connection lines', body: 'When true, particles close to each other are connected with a thin line — like a web or constellation effect. Set to false for plain dots.' },
+            annotation: { title: 'LINES', body: 'Draw lines between nearby particles (web effect).', example: 'const LINES = true;   // web/constellation effect\nconst LINES = false;  // plain dots only' }},
+          { text: '  const LINE_DIST = 100;', freeform: true, prefix: '  const LINE_DIST = ', suffix: ';', placeholder: '100',
+            tip: { title: '📏 LINE_DIST — max connection distance', body: 'How close two particles must be (in pixels) before a line is drawn between them. Only used when LINES is true.' },
+            annotation: { title: 'LINE_DIST', body: 'Maximum distance between particles for a line to be drawn.', example: 'const LINE_DIST = 60;   // sparse web\nconst LINE_DIST = 100;  // balanced\nconst LINE_DIST = 160;  // dense mesh' }},
+          { text: '' },
+          { text: '  // ── SETUP ───────────────────────────────────', optional: true },
+          { text: '  const canvas = document.getElementById(\'c\');',
+            tip: { title: '🖼️ Getting the canvas', body: 'The canvas element is just an empty drawable surface. We grab it by ID and then get its "context" — the drawing API.' }},
+          { text: '  const ctx    = canvas.getContext(\'2d\');',
+            tip: { title: '✏️ 2D context', body: '<code>getContext(\'2d\')</code> returns the 2D drawing API. Everything you draw — circles, lines, fills — goes through <code>ctx</code>.' }},
+          { text: '  let W = canvas.width  = window.innerWidth;',
+            tip: { title: '📐 Canvas size', body: 'Setting <code>canvas.width</code> and <code>canvas.height</code> to the window dimensions makes it fill the whole screen.' }},
+          { text: '  let H = canvas.height = window.innerHeight;' },
+          { text: '  window.addEventListener(\'resize\', () => {',
+            tip: { title: '📱 Resize handler', body: 'When the window is resized, we update the canvas size so it always fills the screen.' }},
+          { text: '    W = canvas.width  = window.innerWidth;' },
+          { text: '    H = canvas.height = window.innerHeight;' },
+          { text: '  });' },
+          { text: '' },
+          { text: '  // ── MOUSE TRACKING ──────────────────────────', optional: true },
+          { text: '  let mx = -9999, my = -9999;',
+            tip: { title: '🖱️ Mouse position', body: 'We start the mouse far off-screen so it doesn\'t accidentally push particles on load. These update on every mouse move.' }},
+          { text: '  window.addEventListener(\'mousemove\', e => { mx = e.clientX; my = e.clientY; });' },
+          { text: '  window.addEventListener(\'mouseleave\', () => { mx = -9999; my = -9999; });' },
+          { text: '' },
+          { text: '  // ── PARTICLE CLASS ──────────────────────────', optional: true },
+          { text: '  class Particle {',
+            tip: { title: '🏗️ Class syntax', body: 'A class is a blueprint for creating objects. Each particle is a separate <code>Particle</code> instance with its own position, velocity, and a random starting point.' }},
+          { text: '    constructor() { this.reset(); }' },
+          { text: '    reset() {',
+            tip: { title: '🔄 reset()', body: 'When a particle drifts off-screen, <code>reset()</code> puts it back at a random position with a new random velocity. This keeps the field always full.' }},
+          { text: '      this.x  = Math.random() * W;' },
+          { text: '      this.y  = Math.random() * H;' },
+          { text: '      this.vx = (Math.random() - 0.5) * SPEED * 2;',
+            tip: { title: '⚡ Velocity', body: '<code>Math.random() - 0.5</code> gives a value between -0.5 and +0.5. Multiplied by SPEED*2, particles move in random directions at your chosen speed.' }},
+          { text: '      this.vy = (Math.random() - 0.5) * SPEED * 2;' },
+          { text: '    }' },
+          { text: '    update() {',
+            tip: { title: '🔁 update()', body: 'Called every animation frame. Applies cursor repulsion, moves the particle, applies friction, then wraps it around edges or resets if it wanders too far.' }},
+          { text: '      const dx = this.x - mx;' },
+          { text: '      const dy = this.y - my;' },
+          { text: '      const dist = Math.sqrt(dx * dx + dy * dy);',
+            tip: { title: '📐 Distance formula', body: 'Pythagoras — <code>√(dx² + dy²)</code>. Tells us how far this particle is from the cursor. If it\'s within PUSH pixels, we apply a repulsion force.' }},
+          { text: '      if (dist < PUSH && dist > 0) {',
+            tip: { title: '💥 Repulsion', body: 'Dividing by <code>dist</code> normalises the direction vector (makes it length 1). Then we scale by FORCE and by how close the particle is — closer = stronger push.' }},
+          { text: '        const strength = (PUSH - dist) / PUSH * FORCE;' },
+          { text: '        this.vx += (dx / dist) * strength;' },
+          { text: '        this.vy += (dy / dist) * strength;' },
+          { text: '      }' },
+          { text: '      this.vx *= FRICTION;' },
+          { text: '      this.vy *= FRICTION;' },
+          { text: '      this.x  += this.vx;' },
+          { text: '      this.y  += this.vy;' },
+          { text: '      if (this.x < -50 || this.x > W+50 || this.y < -50 || this.y > H+50) this.reset();' },
+          { text: '    }' },
+          { text: '    draw() {',
+            tip: { title: '🎨 Drawing a circle', body: '<code>beginPath()</code> starts a new shape. <code>arc(x, y, radius, 0, Math.PI*2)</code> traces a full circle. <code>fill()</code> fills it with the current fillStyle.' }},
+          { text: '      ctx.beginPath();' },
+          { text: '      ctx.arc(this.x, this.y, RADIUS, 0, Math.PI * 2);' },
+          { text: '      ctx.fill();' },
+          { text: '    }' },
+          { text: '  }' },
+          { text: '' },
+          { text: '  // ── CREATE PARTICLES ────────────────────────', optional: true },
+          { text: '  const particles = Array.from({ length: COUNT }, () => new Particle());',
+            tip: { title: '🌊 Creating all particles', body: '<code>Array.from({ length: COUNT }, fn)</code> creates an array of COUNT items, calling <code>fn</code> for each — so we get COUNT fresh Particle instances.' }},
+          { text: '' },
+          { text: '  // ── ANIMATION LOOP ──────────────────────────', optional: true },
+          { text: '  function draw() {',
+            tip: { title: '🔄 Animation loop', body: '<code>requestAnimationFrame(draw)</code> at the end tells the browser to call <code>draw()</code> again before the next screen repaint — typically 60 times per second. This creates smooth animation.' }},
+          { text: '    ctx.fillStyle = \'rgba(0,0,0,0.18)\';',
+            tip: { title: '👻 Motion blur / trails', body: 'Instead of clearing the canvas fully, we fill it with a semi-transparent black. Previous frames fade out slowly — this creates the motion trail effect. Lower alpha = longer trails.' }},
+          { text: '    ctx.fillRect(0, 0, W, H);' },
+          { text: '    ctx.fillStyle = COLOUR;' },
+          { text: '    particles.forEach(p => { p.update(); p.draw(); });',
+            tip: { title: '🔁 Update and draw each particle', body: '<code>forEach</code> loops through every particle, calling <code>update()</code> (physics) then <code>draw()</code> (render) on each.' }},
+          { text: '    if (LINES) {', optional: true },
+          { text: '      ctx.strokeStyle = COLOUR;', optional: true },
+          { text: '      for (let i = 0; i < particles.length; i++) {', optional: true },
+          { text: '        for (let j = i+1; j < particles.length; j++) {', optional: true },
+          { text: '          const dx = particles[i].x - particles[j].x;', optional: true },
+          { text: '          const dy = particles[i].y - particles[j].y;', optional: true },
+          { text: '          const d  = Math.sqrt(dx*dx + dy*dy);', optional: true },
+          { text: '          if (d < LINE_DIST) {', optional: true },
+          { text: '            ctx.globalAlpha = (1 - d/LINE_DIST) * 0.4;', optional: true,
+            tip: { title: '🌫️ Fading lines', body: 'Lines fade out as particles get further apart. <code>globalAlpha</code> sets the canvas opacity — 0 is invisible, 1 is fully opaque.' }},
+          { text: '            ctx.beginPath();', optional: true },
+          { text: '            ctx.moveTo(particles[i].x, particles[i].y);', optional: true },
+          { text: '            ctx.lineTo(particles[j].x, particles[j].y);', optional: true },
+          { text: '            ctx.stroke();', optional: true },
+          { text: '          }', optional: true },
+          { text: '        }', optional: true },
+          { text: '      }', optional: true },
+          { text: '      ctx.globalAlpha = 1;', optional: true },
+          { text: '    }' },
+          { text: '    requestAnimationFrame(draw);' },
+          { text: '  }' },
+          { text: '' },
+          { text: '  draw();',
+            tip: { title: '🚀 Start!', body: 'Calling <code>draw()</code> once kicks off the loop — after that, <code>requestAnimationFrame</code> keeps it going forever.' }},
+          { text: '' },
+          { text: '  <\/script>' },
+          { text: '</body>' },
+          { text: '</html>' },
+        ]
+      }
+    ]
   }
 ];
 
@@ -1371,6 +1541,38 @@ function renderLine(li) {
       content.appendChild(lbl);
     }
 
+  } else if (ld.optional) {
+    // Optional line (e.g. comments) — show dimly, accept anything or nothing
+    const target = ld.text;
+    if (typed.length === 0) {
+      // Not typed yet — show dim hint text with cursor if current
+      for (let ci = 0; ci < target.length; ci++) {
+        const s = mk('span', 'char optional');
+        if (isCur && ci === 0) s.classList.add('cursor-before');
+        s.textContent = target[ci] === ' ' ? '\u00a0' : target[ci];
+        content.appendChild(s);
+      }
+    } else {
+      // Typed something — show char-by-char in dim green (no red errors on optional)
+      for (let ci = 0; ci < Math.max(typed.length, target.length); ci++) {
+        const s = mk('span', 'char optional');
+        if (isCur && ci === typed.length) s.classList.add('cursor-before');
+        const tc = typed[ci];
+        if (tc !== undefined) s.classList.add('correct');
+        s.textContent = (tc || target[ci] || '?') === ' ' ? '\u00a0' : (tc || target[ci] || '?');
+        content.appendChild(s);
+      }
+    }
+    if (isCur && typed.length >= target.length && typed.length > 0) {
+      const c = mk('span','char pending cursor-before'); c.textContent = '\u00a0'; content.appendChild(c);
+    }
+    // Optional badge
+    if (isCur) {
+      const lbl = document.createElement('span');
+      lbl.className = 'optional-label';
+      lbl.textContent = '// optional';
+      content.appendChild(lbl);
+    }
   } else if (ld.text === '') {
     if (isCur) { const c = mk('span','char pending cursor-before'); c.textContent = '\u00a0'; content.appendChild(c); }
   } else {
@@ -1630,6 +1832,16 @@ function updateTip(li) {
 
   area.innerHTML = '';
 
+  // Extra hint for optional lines
+  if (ld.optional) {
+    const optCard = document.createElement('div');
+    optCard.className = 'tip-card';
+    optCard.style.borderColor = '#1a3a1a';
+    optCard.style.background = '#0a1a0a';
+    optCard.innerHTML = `<div class="tip-label" style="color:#4ade80">// optional line</div><div class="tip-text">This is a comment. Type it for full marks, or just press <code>Enter</code> to skip — it won't affect your accuracy score.</div>`;
+    area.appendChild(optCard);
+  }
+
   // Extra hint for freeform colour lines in CSS
   if (ld.freeform && currentPhase.type === 'css') {
     const colourCard = document.createElement('div');
@@ -1689,7 +1901,10 @@ function onKD(e) {
     const ld = currentPhase.lines[currentLine];
     const typed = typedLines[currentLine];
 
-    if (ld.freeform) {
+    if (ld.optional) {
+      // Optional lines: accept whatever was typed (even nothing) — no errors counted
+      if (!typedLines[currentLine]) typedLines[currentLine] = ld.text;
+    } else if (ld.freeform) {
       // Validate: must start with prefix and end with suffix, middle must be non-empty
       const pre = ld.prefix || '';
       const suf = ld.suffix || '';
@@ -1786,7 +2001,7 @@ function updateStats() {
   let ok = 0, total = 0;
   for (let li = 0; li < currentLine; li++) {
     const ld = lines[li];
-    if (ld.freeform) continue; // freeform lines not counted in accuracy
+    if (ld.freeform || ld.optional) continue; // freeform and optional lines not counted in accuracy
     const t = ld.text, u = typedLines[li] || '';
     total += t.length;
     for (let ci = 0; ci < t.length; ci++) if (u[ci] === t[ci]) ok++;
@@ -1813,7 +2028,7 @@ function phaseDone() {
   let ok = 0, total = 0;
   for (let li = 0; li < lines.length; li++) {
     const ld = lines[li];
-    if (ld.freeform) continue;
+    if (ld.freeform || ld.optional) continue;
     const t = ld.text, u = typedLines[li] || '';
     total += t.length;
     for (let ci = 0; ci < t.length; ci++) if (u[ci] === t[ci]) ok++;
@@ -1859,7 +2074,7 @@ function showFinal() {
   let ok = 0, total = 0;
   phases.forEach(ph => {
     ph.lines.forEach((ld, li) => {
-      if (ld.freeform) return;
+      if (ld.freeform || ld.optional) return;
       const t = ld.text, u = typedLines[li] || '';
       total += t.length;
       for (let ci = 0; ci < t.length; ci++) if (u[ci] === t[ci]) ok++;
