@@ -519,7 +519,7 @@ const TEMPLATES = [
           { text: '    <button onclick="reset()">Reset</button>',
             tip: { title: '↩️ Reset button', body: 'A second button that calls a different function. One HTML attribute, one JS function — simple and direct.' }},
           { text: '  </div>' },
-          { text: '  <script src="script.js"></script>',
+          { text: '  <script src="script.js"><\/script>',
             tip: { title: '📜 Script tag', body: 'Links the external JS file. Placed just before <code>&lt;/body&gt;</code> so the HTML loads first — JavaScript can then find elements that already exist in the page.' }},
           { text: '</body>' },
           { text: '</html>' },
@@ -753,7 +753,7 @@ function buildEffectivePhases() {
     ];
   }
 
-  // Step 2: replace <script src="..."> with inline <script>…</script>
+  // Step 2: replace <script src="..."> with inline <script>…<\/script>
   if (jsPhase) {
     const scriptIdx = mergedLines.findIndex(ld => ld.text.trim().startsWith('<script src='));
     if (scriptIdx !== -1) {
@@ -766,7 +766,7 @@ function buildEffectivePhases() {
         ...mergedLines.slice(0, scriptIdx),
         { text: '  <script>', tip: { title: '⚡ Inline &lt;script&gt;', body: 'Instead of a separate JS file, the JavaScript lives inside this tag just before &lt;/body&gt;.' } },
         ...indentedJs,
-        { text: '  </script>' },
+        { text: '  <\/script>' },
         ...mergedLines.slice(scriptIdx + 1),
       ];
     }
