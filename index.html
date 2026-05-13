@@ -130,8 +130,8 @@
 
   /* Chars */
   .char { position: relative; display: inline-block; white-space: pre; }
-  .char.pending { color: var(--pending); }
-  .char.correct { color: var(--correct); }
+  .char.pending { color: #1a4a1a; }  /* dim green — not yet typed */
+  .char.correct { color: #4ade80; }  /* typed correctly — bright green */
   .char.error { color: var(--error); text-decoration: underline; text-decoration-color: var(--error); }
   .char.extra { color: var(--error); }
   .char.cursor-before::before { content: ''; position: absolute; left: -1px; top: 3px; bottom: 3px; width: 2px; background: var(--cursor); animation: blink 1s step-end infinite; }
@@ -233,6 +233,21 @@
   .char.sh-prop     { color: var(--syn-prop); }
   .char.sh-value    { color: var(--syn-value); }
   .char.sh-selector { color: var(--syn-selector); }
+  /* Typed chars: override correct green with syntax colour */
+  .char.correct.sh-keyword  { color: var(--syn-keyword); }
+  .char.correct.sh-string   { color: var(--syn-string); }
+  .char.correct.sh-number   { color: var(--syn-number); }
+  .char.correct.sh-comment  { color: #6a8a6a; }
+  .char.correct.sh-tag      { color: var(--syn-tag); }
+  .char.correct.sh-attr     { color: var(--syn-attr); }
+  .char.correct.sh-func     { color: var(--syn-func); }
+  .char.correct.sh-builtin  { color: var(--syn-builtin); }
+  .char.correct.sh-operator { color: var(--syn-operator); }
+  .char.correct.sh-punct    { color: var(--syn-punct); }
+  .char.correct.sh-class    { color: var(--syn-class); }
+  .char.correct.sh-prop     { color: var(--syn-prop); }
+  .char.correct.sh-value    { color: var(--syn-value); }
+  .char.correct.sh-selector { color: var(--syn-selector); }
   @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
 
   .char.free { color: #a78bfa; }           /* user's own freeform content */
@@ -2685,6 +2700,523 @@ const TEMPLATES = [
       ]
     }]
   }
+,
+
+  {
+    id: 'browser-notebook',
+    title: 'Browser Notebook',
+    desc: 'A localStorage-backed notebook — create, edit, and delete notes that survive page refresh.',
+    tags: ['html', 'css', 'js', 'localstorage', 'intermediate'],
+    category: 'web', langs: ['html','css','js'], difficulty: 'medium',
+    phases: [
+      {
+        id: 'nb-html', name: 'HTML Structure', type: 'html', icon: '🏗️',
+        filename: 'index.html', desc: 'Sidebar note list and editor panel.',
+        lines: [
+          { text: '<!DOCTYPE html>' },
+          { text: '<html lang="en">' },
+          { text: '<head>' },
+          { text: '  <meta charset="UTF-8">' },
+          { text: '  <meta name="viewport" content="width=device-width, initial-scale=1.0">' },
+          { text: '  <title>', freeform: true, prefix: '  <title>', suffix: '<\/title>', placeholder: 'My Notebook' },
+          { text: '  <link rel="stylesheet" href="style.css">' },
+          { text: '<\/head>' },
+          { text: '<body>' },
+          { text: '  <div class="app">', tip: { title: '📐 Two-panel app', body: 'Sidebar + editor — CSS flexbox splits them side-by-side.' }},
+          { text: '    <aside class="sidebar">' },
+          { text: '      <div class="sidebar-header">' },
+          { text: '        <h1>📓 Notes<\/h1>' },
+          { text: '        <button id="new-btn" onclick="newNote()">+ New<\/button>' },
+          { text: '      <\/div>' },
+          { text: '      <ul id="note-list"><\/ul>', tip: { title: '📋 Dynamic list', body: 'JS builds &lt;li&gt; items here for every saved note. Click to open.' }},
+          { text: '    <\/aside>' },
+          { text: '    <main class="editor">' },
+          { text: '      <input id="note-title" type="text" placeholder="Note title..." oninput="saveNote()">', tip: { title: '⌨️ oninput auto-save', body: 'Fires every keystroke — saves to localStorage instantly.' }},
+          { text: '      <textarea id="note-body" placeholder="Start writing..." oninput="saveNote()"><\/textarea>' },
+          { text: '      <div class="editor-footer">' },
+          { text: '        <span id="char-count">0 chars<\/span>' },
+          { text: '        <button onclick="deleteNote()">🗑 Delete<\/button>' },
+          { text: '      <\/div>' },
+          { text: '    <\/main>' },
+          { text: '  <\/div>' },
+          { text: '  <script src="script.js"><\/script>' },
+          { text: '<\/body>' },
+          { text: '<\/html>' }
+        ]
+      },
+      {
+        id: 'nb-css', name: 'CSS Styling', type: 'css', icon: '🎨',
+        filename: 'style.css', desc: 'Full-height flex layout with dark sidebar.',
+        lines: [
+          { text: '* { box-sizing: border-box; margin: 0; padding: 0; }' },
+          { text: 'body { font-family: sans-serif; height: 100vh; overflow: hidden; }' },
+          { text: '.app { display: flex; height: 100vh; }' },
+          { text: '.sidebar { width: 260px; flex-shrink: 0; background: #1e1e2e;', freeform: true, prefix: '.sidebar { width: 260px; flex-shrink: 0; background: ', suffix: ';', placeholder: '#1e1e2e', annotation: { title: 'Sidebar colour', body: 'Hover for colour guide.', example: 'background: #1e1e2e;\nbackground: #2d2d2d;\nbackground: #f4f4f4;' }},
+          { text: '  color: #cdd6f4; display: flex; flex-direction: column; border-right: 1px solid #313244; }' },
+          { text: '.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #313244; }' },
+          { text: '.sidebar-header h1 { font-size: 1rem; }' },
+          { text: '#new-btn { background: #89b4fa;', freeform: true, prefix: '#new-btn { background: ', suffix: ';', placeholder: '#89b4fa', annotation: { title: 'New note button colour', body: 'Primary action button colour.', example: 'background: #89b4fa;\nbackground: #a6e3a1;\nbackground: #f38ba8;' }},
+          { text: '  color: #1e1e2e; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }' },
+          { text: '#note-list { flex: 1; overflow-y: auto; list-style: none; padding: 8px; }' },
+          { text: '#note-list li { padding: 10px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 4px; font-size: 0.85rem; border: 1px solid transparent; }' },
+          { text: '#note-list li:hover { background: #313244; }' },
+          { text: '#note-list li.active { background: #313244; border-color: #89b4fa; }' },
+          { text: '.editor { flex: 1; display: flex; flex-direction: column; padding: 24px; gap: 12px; }' },
+          { text: '#note-title { font-size: 1.4rem; font-weight: bold; border: none; outline: none; width: 100%; border-bottom: 2px solid #eee; padding-bottom: 8px; }' },
+          { text: '#note-body { flex: 1; border: none; outline: none; resize: none; font-size: 1rem; line-height: 1.7; font-family: inherit; }' },
+          { text: '.editor-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #999; }' },
+          { text: '.editor-footer button { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }' }
+        ]
+      },
+      {
+        id: 'nb-js', name: 'JavaScript', type: 'js', icon: '⚡',
+        filename: 'script.js', desc: 'CRUD notes in localStorage.',
+        lines: [
+          { text: "let notes = JSON.parse(localStorage.getItem('nb_notes')) || [];", tip: { title: '💾 Load from localStorage', body: 'Parse saved notes on load. Falls back to empty array if nothing saved.' }},
+          { text: 'let activeId = null;' },
+          { text: "function persist() { localStorage.setItem('nb_notes', JSON.stringify(notes)); }" },
+          { text: 'function newNote() {', tip: { title: '🆔 Date.now() ID', body: 'Milliseconds since epoch — simple unique ID. unshift adds to front.' }},
+          { text: "  const note = { id: Date.now(), title: 'Untitled', body: '' };" },
+          { text: '  notes.unshift(note); persist(); loadNote(note.id); renderList();' },
+          { text: '}' },
+          { text: 'function loadNote(id) {' },
+          { text: '  activeId = id;' },
+          { text: '  const note = notes.find(n => n.id === id); if (!note) return;' },
+          { text: "  document.getElementById('note-title').value = note.title;" },
+          { text: "  document.getElementById('note-body').value  = note.body;" },
+          { text: '  updateCount(); renderList();' },
+          { text: '}' },
+          { text: 'function saveNote() {' },
+          { text: '  const note = notes.find(n => n.id === activeId); if (!note) return;' },
+          { text: "  note.title = document.getElementById('note-title').value || 'Untitled';" },
+          { text: "  note.body  = document.getElementById('note-body').value;" },
+          { text: '  persist(); updateCount(); renderList();' },
+          { text: '}' },
+          { text: 'function deleteNote() {', tip: { title: 'Array.filter()', body: 'Returns new array without the deleted note. ?. safely accesses first item.' }},
+          { text: '  notes = notes.filter(n => n.id !== activeId); persist();' },
+          { text: '  activeId = notes[0]?.id || null;' },
+          { text: "  if (activeId) loadNote(activeId); else { document.getElementById('note-title').value=''; document.getElementById('note-body').value=''; }" },
+          { text: '  renderList();' },
+          { text: '}' },
+          { text: 'function renderList() {' },
+          { text: "  document.getElementById('note-list').innerHTML = notes.map(n =>" },
+          { text: "    `<li class=\"${n.id===activeId?'active':''}\" onclick=\"loadNote(${n.id})\">${n.title.slice(0,28)}<\\/li>`).join('');" },
+          { text: '}' },
+          { text: 'function updateCount() {' },
+          { text: "  document.getElementById('char-count').textContent = document.getElementById('note-body').value.length + ' chars';" },
+          { text: '}' },
+          { text: "renderList(); if (notes.length) loadNote(notes[0].id); else newNote();" }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'pixel-art',
+    title: 'Pixel Art Editor',
+    desc: 'Browser pixel art editor — draw, erase, flood-fill, and export PNG.',
+    tags: ['html', 'css', 'js', 'canvas', 'intermediate'],
+    category: 'web', langs: ['html','css','js'], difficulty: 'medium',
+    phases: [
+      {
+        id: 'px-html', name: 'HTML', type: 'html', icon: '🏗️', filename: 'index.html', desc: 'Toolbar and canvas.',
+        lines: [
+          { text: '<!DOCTYPE html>' }, { text: '<html lang="en">' }, { text: '<head>' }, { text: '  <meta charset="UTF-8">' },
+          { text: '  <title>', freeform: true, prefix: '  <title>', suffix: '<\/title>', placeholder: 'Pixel Art Editor' },
+          { text: '  <link rel="stylesheet" href="style.css">' }, { text: '<\/head>' }, { text: '<body>' },
+          { text: '  <div class="app">' },
+          { text: '    <div class="toolbar">' },
+          { text: '      <h2>🎨 Pixel Art<\/h2>' },
+          { text: '      <label>Colour <input type="color" id="colour" value="#000000"><\/label>', tip: { title: '🎨 Color input', body: 'Native browser colour picker. Read with .value — returns hex like "#ff0000".' }},
+          { text: "      <button onclick=\"setTool('draw')\"  id=\"t-draw\">✏ Draw<\/button>" },
+          { text: "      <button onclick=\"setTool('erase')\" id=\"t-erase\">⬜ Erase<\/button>" },
+          { text: "      <button onclick=\"setTool('fill')\"  id=\"t-fill\">🪣 Fill<\/button>", tip: { title: '🪣 Fill tool', body: 'Flood-fill replaces connected same-colour pixels. Implemented with BFS.' }},
+          { text: '      <button onclick="clearGrid()">🗑 Clear<\/button>' },
+          { text: '      <label>Grid <input type="number" id="size" value="16" min="4" max="64" onchange="initGrid()"><\/label>' },
+          { text: '      <button onclick="exportPNG()">⬇ Export PNG<\/button>' },
+          { text: '    <\/div>' },
+          { text: '    <div class="canvas-wrap"><canvas id="c"><\/canvas><\/div>' },
+          { text: '  <\/div>' },
+          { text: '  <script src="script.js"><\/script>' }, { text: '<\/body>' }, { text: '<\/html>' }
+        ]
+      },
+      {
+        id: 'px-css', name: 'CSS', type: 'css', icon: '🎨', filename: 'style.css', desc: 'Dark editor shell.',
+        lines: [
+          { text: '* { box-sizing: border-box; margin: 0; padding: 0; }' },
+          { text: 'body { background: #1a1a2e;', freeform: true, prefix: 'body { background: ', suffix: ';', placeholder: '#1a1a2e', annotation: { title: 'Editor background', body: 'Dark backgrounds make pixel art pop.', example: 'background: #1a1a2e;\nbackground: #0f0f0f;' }},
+          { text: '  color: #eee; font-family: sans-serif; height: 100vh; }' },
+          { text: '.app { display: flex; flex-direction: column; align-items: center; height: 100vh; }' },
+          { text: '.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 14px 20px; background: #16213e; width: 100%; border-bottom: 1px solid #0f3460; }' },
+          { text: '.toolbar button { background: #0f3460; color: #eee; border: 1px solid #1a4a8a; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: background 0.15s; }' },
+          { text: '.toolbar button:hover { background: #1a4a8a; }' },
+          { text: '.toolbar button.active { background: #e94560;', freeform: true, prefix: '.toolbar button.active { background: ', suffix: ';', placeholder: '#e94560', annotation: { title: 'Active tool colour', body: 'Shows which tool is selected.', example: 'background: #e94560;\nbackground: #89b4fa;' }},
+          { text: '  color: #fff; border-color: #e94560; }' },
+          { text: '.toolbar label { font-size: 0.82rem; display: flex; align-items: center; gap: 6px; }' },
+          { text: '.canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }' },
+          { text: 'canvas { image-rendering: pixelated; cursor: crosshair; box-shadow: 0 0 40px rgba(0,0,0,0.5); }', tip: { title: '🔲 image-rendering: pixelated', body: 'Prevents browser blurring when canvas scales. Essential for pixel art.' }}
+        ]
+      },
+      {
+        id: 'px-js', name: 'JavaScript', type: 'js', icon: '⚡', filename: 'script.js', desc: 'Grid, draw/fill, BFS flood fill, PNG export.',
+        lines: [
+          { text: 'const CELL = ', freeform: true, prefix: 'const CELL = ', suffix: ';', placeholder: '20', tip: { title: '🔲 Cell size', body: 'Each pixel = CELL×CELL canvas pixels. 16–24 is comfortable.' }},
+          { text: "const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');" },
+          { text: "let tool = 'draw', drawing = false, grid = [];" },
+          { text: 'function initGrid() {', tip: { title: '🏗️ initGrid', body: 'Size the canvas and fill grid with white. Array(n).fill(v) creates n-length array.' }},
+          { text: "  const size = parseInt(document.getElementById('size').value);" },
+          { text: "  grid = Array(size * size).fill('#ffffff');" },
+          { text: '  canvas.width = canvas.height = size * CELL; drawGrid();' },
+          { text: '}' },
+          { text: 'function drawGrid() {' },
+          { text: '  const size = Math.sqrt(grid.length);' },
+          { text: '  for (let i = 0; i < grid.length; i++) {' },
+          { text: '    const x = (i % size) * CELL, y = Math.floor(i / size) * CELL;' },
+          { text: "    ctx.fillStyle = grid[i]; ctx.fillRect(x, y, CELL, CELL);" },
+          { text: "    ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.strokeRect(x, y, CELL, CELL);" },
+          { text: '  }' },
+          { text: '}' },
+          { text: 'function setTool(t) {' },
+          { text: '  tool = t;' },
+          { text: "  document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));" },
+          { text: "  document.getElementById('t-' + t).classList.add('active');" },
+          { text: '}' },
+          { text: 'function getCell(e) {', tip: { title: '📍 Mouse to grid cell', body: 'getBoundingClientRect() gives canvas position. Subtract, divide by CELL.' }},
+          { text: '  const r = canvas.getBoundingClientRect(), size = Math.sqrt(grid.length);' },
+          { text: '  return Math.floor((e.clientY-r.top)/CELL)*size + Math.floor((e.clientX-r.left)/CELL);' },
+          { text: '}' },
+          { text: 'function paint(e) {' },
+          { text: "  const i = getCell(e), col = document.getElementById('colour').value;" },
+          { text: "  if (tool==='draw') grid[i]=col;" },
+          { text: "  if (tool==='erase') grid[i]='#ffffff';" },
+          { text: "  if (tool==='fill') flood(i, grid[i], col);" },
+          { text: '  drawGrid();' },
+          { text: '}' },
+          { text: 'function flood(start, oldCol, newCol) {', tip: { title: '🪣 BFS flood fill', body: 'Paint, push 4 neighbours, repeat while matching old colour.' }},
+          { text: '  if (oldCol===newCol) return;' },
+          { text: '  const size=Math.sqrt(grid.length), q=[start];' },
+          { text: '  while (q.length) {' },
+          { text: '    const i=q.shift(); if(i<0||i>=grid.length||grid[i]!==oldCol) continue;' },
+          { text: '    grid[i]=newCol; const r=Math.floor(i/size),c=i%size;' },
+          { text: '    if(c>0) q.push(i-1); if(c<size-1) q.push(i+1);' },
+          { text: '    if(r>0) q.push(i-size); if(r<size-1) q.push(i+size);' },
+          { text: '  }' },
+          { text: '}' },
+          { text: "function clearGrid() { grid.fill('#ffffff'); drawGrid(); }" },
+          { text: "function exportPNG() { const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='pixel-art.png'; a.click(); }" },
+          { text: "canvas.addEventListener('mousedown',e=>{drawing=true;paint(e);});" },
+          { text: "canvas.addEventListener('mousemove',e=>{if(drawing)paint(e);});" },
+          { text: "canvas.addEventListener('mouseup',()=>drawing=false);" },
+          { text: "initGrid(); setTool('draw');" }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'kb-viz',
+    title: 'Keyboard Visualizer',
+    desc: 'Interactive keyboard that lights up on keypress with configurable colours and synthesised click sounds.',
+    tags: ['html', 'css', 'js', 'intermediate'],
+    category: 'web', langs: ['html','css','js'], difficulty: 'hard',
+    phases: [
+      {
+        id: 'kb-html', name: 'HTML', type: 'html', icon: '🏗️', filename: 'index.html', desc: 'Page shell and control panel.',
+        lines: [
+          { text: '<!DOCTYPE html>' }, { text: '<html lang="en">' }, { text: '<head>' }, { text: '  <meta charset="UTF-8">' },
+          { text: '  <title>', freeform: true, prefix: '  <title>', suffix: '<\/title>', placeholder: 'Keyboard Visualizer' },
+          { text: '  <link rel="stylesheet" href="style.css">' }, { text: '<\/head>' }, { text: '<body>' },
+          { text: '  <div class="page">' },
+          { text: '    <h1 class="title">⌨️ Keyboard Visualizer<\/h1>' },
+          { text: '    <div class="controls">' },
+          { text: '      <label>Press colour <input type="color" id="press-colour" value="#89b4fa"><\/label>', tip: { title: '🎨 Press colour', body: 'Colour keys light up when pressed.' }},
+          { text: '      <label>Glow <input type="checkbox" id="glow" checked><\/label>' },
+          { text: '      <label>Sound <input type="checkbox" id="sound" checked><\/label>', tip: { title: '🔊 Web Audio click', body: 'Synthesised mechanical click — white noise burst with fast decay. No audio files needed.' }},
+          { text: '      <span id="wpm-display">WPM: 0<\/span>' },
+          { text: '    <\/div>' },
+          { text: '    <div class="keyboard" id="keyboard"><\/div>', tip: { title: '⌨️ Generated keyboard', body: 'JS builds every key from a layout array. Clean HTML, easy to change.' }},
+          { text: '    <div class="recently">' },
+          { text: '      <p>Last key: <span id="last-key">—<\/span><\/p>' },
+          { text: '      <p>Total: <span id="total">0<\/span><\/p>' },
+          { text: '    <\/div>' },
+          { text: '  <\/div>' },
+          { text: '  <script src="script.js"><\/script>' }, { text: '<\/body>' }, { text: '<\/html>' }
+        ]
+      },
+      {
+        id: 'kb-css', name: 'CSS', type: 'css', icon: '🎨', filename: 'style.css', desc: 'Dark keyboard with 3D key press animation.',
+        lines: [
+          { text: '* { box-sizing: border-box; margin: 0; padding: 0; }' },
+          { text: 'body { background: #0f0f1a;', freeform: true, prefix: 'body { background: ', suffix: ';', placeholder: '#0f0f1a', annotation: { title: 'Page background', body: 'Very dark backgrounds make keyboards pop.', example: 'background: #0f0f1a;\nbackground: #111;\nbackground: #1a1a2e;' }},
+          { text: '  color: #cdd6f4; font-family: "Segoe UI",sans-serif; min-height: 100vh; display: flex; justify-content: center; }' },
+          { text: '.page { max-width: 900px; width: 100%; padding: 40px 20px; }' },
+          { text: '.title { font-size: 1.5rem; margin-bottom: 20px; text-align: center; }' },
+          { text: '.controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; background: #1e1e2e; padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; }' },
+          { text: '.keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; background: #1e1e2e; border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }' },
+          { text: '.key-row { display: flex; gap: 5px; }' },
+          { text: '.key { background: #313244;', freeform: true, prefix: '.key { background: ', suffix: ';', placeholder: '#313244', annotation: { title: 'Key colour', body: 'Resting key colour.', example: '.key { background: #313244; }\n.key { background: #2a2a3a; }' }},
+          { text: '  color: #cdd6f4; border-radius: 6px; width: 44px; height: 44px;' },
+          { text: '  display: flex; align-items: center; justify-content: center;' },
+          { text: '  font-size: 0.72rem; font-weight: 600; cursor: pointer; user-select: none;' },
+          { text: '  border-bottom: 3px solid #1a1a2a; transition: all 0.06s ease; }', tip: { title: '3D key effect', body: 'Thick bottom border = key edge. On press: shrink + translateY(2px).' }},
+          { text: '.key.pressed { background: var(--press-col,#89b4fa); border-bottom-width: 1px; transform: translateY(2px); }' },
+          { text: '.key.pressed.glow { box-shadow: 0 0 12px var(--press-col,#89b4fa); }' },
+          { text: '.key.wide-2 { width: 96px; } .key.wide-3 { width: 148px; } .key.space { width: 280px; }' },
+          { text: '.recently { margin-top: 20px; text-align: center; font-size: 0.9rem; color: #6c7086; }' }
+        ]
+      },
+      {
+        id: 'kb-js', name: 'JavaScript', type: 'js', icon: '⚡', filename: 'script.js', desc: 'Generate keys, handle events, synthesise audio, track WPM.',
+        lines: [
+          { text: 'const ROWS = [', tip: { title: '⌨️ Layout data', body: 'Inner arrays = rows. Strings = labels. Objects with w = wide keys.' }},
+          { text: '  ["Esc","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12"],' },
+          { text: '  ["`","1","2","3","4","5","6","7","8","9","0","-","=",{l:"Del",w:2}],' },
+          { text: '  [{l:"Tab",w:2},"Q","W","E","R","T","Y","U","I","O","P","[","]","\\\\"],' },
+          { text: '  [{l:"Caps",w:2},"A","S","D","F","G","H","J","K","L",";","\'",{l:"Enter",w:2}],' },
+          { text: '  [{l:"Shift",w:3},"Z","X","C","V","B","N","M",",",".","/",{l:"Shift",w:3}],' },
+          { text: '  ["Ctrl","Win","Alt",{l:"Space",w:"space"},"Alt","Fn","Ctrl"]' },
+          { text: '];' },
+          { text: 'const keyMap = {}; let total=0,charCount=0,wpmTimer=null,startT=null;' },
+          { text: "const kb = document.getElementById('keyboard');" },
+          { text: 'ROWS.forEach(row => {' },
+          { text: '  const rowEl = document.createElement("div"); rowEl.className = "key-row";' },
+          { text: '  row.forEach(k => {' },
+          { text: '    const key = typeof k==="string" ? {l:k} : k;' },
+          { text: '    const el = document.createElement("div");' },
+          { text: '    el.className = "key"+(key.w==="space"?" space":key.w===3?" wide-3":key.w===2?" wide-2":"");' },
+          { text: '    el.textContent=key.l; el.dataset.key=key.l.toLowerCase();' },
+          { text: '    rowEl.appendChild(el); keyMap[key.l.toLowerCase()]=el;' },
+          { text: '  }); kb.appendChild(rowEl);' },
+          { text: '});' },
+          { text: 'const audioCtx = new (window.AudioContext||window.webkitAudioContext)();', tip: { title: '🔊 Web Audio API', body: 'Entry point for synthesised sound in the browser.' }},
+          { text: 'function playClick() {' },
+          { text: "  if (!document.getElementById('sound').checked) return;" },
+          { text: '  const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.05,audioCtx.sampleRate);' },
+          { text: '  const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);', tip: { title: '🎵 Noise click', body: 'White noise that fades out — a convincing mechanical click without audio files.' }},
+          { text: '  const src=audioCtx.createBufferSource(),gain=audioCtx.createGain();' },
+          { text: '  src.buffer=buf; gain.gain.setValueAtTime(0.15,audioCtx.currentTime);' },
+          { text: '  gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.05);' },
+          { text: '  src.connect(gain); gain.connect(audioCtx.destination); src.start();' },
+          { text: '}' },
+          { text: 'function pressKey(label) {' },
+          { text: "  const col=document.getElementById('press-colour').value;" },
+          { text: "  document.documentElement.style.setProperty('--press-col',col);" },
+          { text: '  const el=keyMap[label.toLowerCase()]; if(!el) return;' },
+          { text: '  el.classList.add("pressed");' },
+          { text: "  if(document.getElementById('glow').checked) el.classList.add('glow');" },
+          { text: '  playClick(); total++;' },
+          { text: "  document.getElementById('total').textContent=total;" },
+          { text: "  document.getElementById('last-key').textContent=label;" },
+          { text: '  charCount++; if(!startT) startT=Date.now();' },
+          { text: '  clearTimeout(wpmTimer);' },
+          { text: "  wpmTimer=setTimeout(()=>{charCount=0;startT=null;document.getElementById('wpm-display').textContent='WPM: 0';},3000);" },
+          { text: '  const mins=(Date.now()-startT)/60000||0.001;' },
+          { text: "  document.getElementById('wpm-display').textContent='WPM: '+Math.round((charCount/5)/mins);" },
+          { text: '}' },
+          { text: "document.addEventListener('keydown',e=>{e.preventDefault();pressKey(e.key===' '?'Space':e.key);});" },
+          { text: "document.addEventListener('keyup',e=>{const el=keyMap[(e.key===' '?'space':e.key).toLowerCase()];if(el)el.classList.remove('pressed','glow');});" },
+          { text: "kb.addEventListener('mousedown',e=>{if(e.target.classList.contains('key'))pressKey(e.target.dataset.key);});" }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'py-physics',
+    title: 'Physics Simulation',
+    desc: 'Bouncing balls with gravity, bounce, friction, and elastic circle collisions — rendered with pygame.',
+    tags: ['python', 'hard', 'simulation', 'pygame'],
+    category: 'python', langs: ['py'], difficulty: 'hard',
+    phases: [{
+      id: 'py-phys-1', name: 'Physics Simulation', type: 'py', icon: '🌍',
+      filename: 'physics.py', desc: 'Euler physics + circle collision. Requires: pip install pygame',
+      lines: [
+        { text: '# ── About ───────────────────────────────────', optional: true },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'Your name / project' },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'e.g. github.com/yourname' },
+        { text: '' },
+        { text: '# pip install pygame', optional: true },
+        { text: 'import pygame, math, random', tip: { title: '📦 pygame', body: 'Wraps SDL for Python — window, drawing, input, and a game loop.' }},
+        { text: '' },
+        { text: 'WIDTH    = int(input("Window width  (default 800): ").strip() or 800)' },
+        { text: 'HEIGHT   = int(input("Window height (default 600): ").strip() or 600)' },
+        { text: 'GRAVITY  = float(input("Gravity  (default 0.4): ").strip() or 0.4)', tip: { title: '⌨️ input() config', body: 'Press Enter to keep the default. or provides the fallback value.' }},
+        { text: 'BOUNCE   = float(input("Bounce   (default 0.75): ").strip() or 0.75)' },
+        { text: 'FRICTION = float(input("Friction (default 0.99): ").strip() or 0.99)' },
+        { text: 'NUM_BALLS = int(input("Num balls (default 8): ").strip() or 8)' },
+        { text: '' },
+        { text: 'BG      = (15, 15, 25)' },
+        { text: 'COLOURS = [(240,100,100),(100,200,100),(100,150,240),(240,200,80),(200,100,240)]' },
+        { text: 'FPS = 60' },
+        { text: '' },
+        { text: 'class Ball:', tip: { title: '⚽ Physics class', body: 'position (x,y) + velocity (vx,vy). update() applies gravity and wall bounce each frame.' }},
+        { text: '    def __init__(self):' },
+        { text: '        self.r   = random.randint(12, 28)' },
+        { text: '        self.x   = random.randint(self.r, WIDTH  - self.r)' },
+        { text: '        self.y   = random.randint(self.r, HEIGHT // 2)' },
+        { text: '        self.vx  = random.uniform(-4, 4)' },
+        { text: '        self.vy  = random.uniform(-2, 2)' },
+        { text: '        self.col = random.choice(COLOURS)' },
+        { text: '    def update(self):', tip: { title: '🔄 Euler physics', body: 'Add gravity to vy, add velocity to position, bounce off walls each frame.' }},
+        { text: '        self.vy += GRAVITY' },
+        { text: '        self.x  += self.vx; self.y += self.vy' },
+        { text: '        if self.x-self.r<0:         self.x=self.r;        self.vx= abs(self.vx)*BOUNCE' },
+        { text: '        if self.x+self.r>WIDTH:     self.x=WIDTH-self.r;  self.vx=-abs(self.vx)*BOUNCE' },
+        { text: '        if self.y+self.r>HEIGHT:    self.y=HEIGHT-self.r; self.vy=-abs(self.vy)*BOUNCE; self.vx*=FRICTION' },
+        { text: '        if self.y-self.r<0:         self.y=self.r;        self.vy= abs(self.vy)*BOUNCE' },
+        { text: '    def collide(self, other):', tip: { title: '💥 Circle collision', body: 'Collide if distance < sum of radii. Resolve by separating along normal and exchanging velocity.' }},
+        { text: '        dx,dy=other.x-self.x,other.y-self.y; dist=math.sqrt(dx*dx+dy*dy)' },
+        { text: '        if dist<self.r+other.r and dist>0:' },
+        { text: '            nx,ny=dx/dist,dy/dist; overlap=(self.r+other.r-dist)/2' },
+        { text: '            self.x-=nx*overlap; self.y-=ny*overlap; other.x+=nx*overlap; other.y+=ny*overlap' },
+        { text: '            dvx,dvy=self.vx-other.vx,self.vy-other.vy; dot=dvx*nx+dvy*ny' },
+        { text: '            self.vx-=dot*nx*BOUNCE; self.vy-=dot*ny*BOUNCE; other.vx+=dot*nx*BOUNCE; other.vy+=dot*ny*BOUNCE' },
+        { text: '    def draw(self, s):' },
+        { text: '        pygame.draw.circle(s,self.col,(int(self.x),int(self.y)),self.r)' },
+        { text: '        pygame.draw.circle(s,(255,255,255),(int(self.x-self.r//3),int(self.y-self.r//3)),self.r//4)' },
+        { text: '' },
+        { text: 'pygame.init()' },
+        { text: 'screen=pygame.display.set_mode((WIDTH,HEIGHT)); pygame.display.set_caption("Physics")' },
+        { text: 'clock=pygame.time.Clock(); balls=[Ball() for _ in range(NUM_BALLS)]' },
+        { text: 'running=True' },
+        { text: 'while running:', tip: { title: '🔄 Game loop', body: 'Handle events → update physics → draw. Space adds a ball.' }},
+        { text: '    for event in pygame.event.get():' },
+        { text: '        if event.type==pygame.QUIT: running=False' },
+        { text: '        if event.type==pygame.KEYDOWN and event.key==pygame.K_SPACE: balls.append(Ball())' },
+        { text: '    screen.fill(BG)' },
+        { text: '    for i,b in enumerate(balls):' },
+        { text: '        b.update()' },
+        { text: '        for j in range(i+1,len(balls)): b.collide(balls[j])' },
+        { text: '        b.draw(screen)' },
+        { text: '    pygame.display.flip(); clock.tick(FPS)' },
+        { text: 'pygame.quit()' }
+      ]
+    }]
+  },
+
+  {
+    id: 'py-netscan',
+    title: 'Network Scanner',
+    desc: 'Discover live hosts and open ports on your local network with ARP + multithreaded TCP.',
+    tags: ['python', 'hard', 'networking', 'cybersecurity'],
+    category: 'python', langs: ['py'], difficulty: 'hard',
+    phases: [{
+      id: 'py-netscan-1', name: 'Network Scanner', type: 'py', icon: '🔬',
+      filename: 'netscan.py', desc: 'ARP host discovery + threaded TCP port scan. ⚠️ Only scan networks you own.',
+      lines: [
+        { text: '# ── About ───────────────────────────────────', optional: true },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'Your name / project' },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'e.g. github.com/yourname' },
+        { text: '' },
+        { text: '# ⚠️ Only scan networks you own or have explicit permission to scan.', optional: true },
+        { text: '# pip install scapy', optional: true },
+        { text: 'import socket, concurrent.futures, datetime, ipaddress', tip: { title: '📦 ipaddress module', body: 'ip_network("192.168.1.0/24") generates all 256 addresses in the subnet.' }},
+        { text: 'try:' },
+        { text: '    from scapy.all import ARP, Ether, srp', tip: { title: '🔬 scapy ARP', body: 'Broadcast ARP to find live hosts on the LAN.' }},
+        { text: '    HAS_SCAPY = True' },
+        { text: 'except ImportError: HAS_SCAPY = False' },
+        { text: '' },
+        { text: 'NETWORK = input("Target network (e.g. 192.168.1.0/24): ").strip() or "127.0.0.1/32"', tip: { title: '⌨️ input() config', body: 'Press Enter for safe defaults (localhost only).' }},
+        { text: 'PORTS   = input("Port range (default 1-1024): ").strip() or "1-1024"' },
+        { text: 'TIMEOUT = float(input("Timeout seconds (default 0.5): ").strip() or "0.5")' },
+        { text: 'WORKERS = int(input("Thread count (default 200): ").strip() or "200")' },
+        { text: 'PORT_S, PORT_E = [int(p) for p in PORTS.split("-")]' },
+        { text: 'SERVICES = {21:"FTP",22:"SSH",80:"HTTP",443:"HTTPS",3306:"MySQL",5432:"Postgres",8080:"HTTP-alt"}' },
+        { text: '' },
+        { text: 'def arp_scan(network):' },
+        { text: '    if not HAS_SCAPY: return [str(ip) for ip in ipaddress.ip_network(network,strict=False).hosts()]' },
+        { text: '    pkt=Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=network)' },
+        { text: '    answered,_=srp(pkt,timeout=2,verbose=False)' },
+        { text: '    return [(r.psrc,r.hwsrc) for _,r in answered]' },
+        { text: '' },
+        { text: 'def scan_port(args):', tip: { title: '🔌 TCP connect scan', body: 'connect_ex returns 0 if port open. Wrapped in try/except.' }},
+        { text: '    host,port=args' },
+        { text: '    try:' },
+        { text: '        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:' },
+        { text: '            s.settimeout(TIMEOUT); return port if s.connect_ex((host,port))==0 else None' },
+        { text: '    except: return None' },
+        { text: '' },
+        { text: 'def scan_host(host):' },
+        { text: '    with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as ex:' },
+        { text: '        return sorted(p for p in ex.map(scan_port,[(host,p) for p in range(PORT_S,PORT_E+1)]) if p)' },
+        { text: '' },
+        { text: 'print(f"\\nNetwork Scanner — {datetime.datetime.now():%Y-%m-%d %H:%M}")' },
+        { text: 'print(f"Target: {NETWORK}  Ports: {PORT_S}-{PORT_E}\\n")' },
+        { text: 'hosts=arp_scan(NETWORK); print(f"Found {len(hosts)} host(s)\\n")' },
+        { text: 'for host_info in hosts:' },
+        { text: '    host=host_info[0] if isinstance(host_info,tuple) else host_info' },
+        { text: '    mac=host_info[1] if isinstance(host_info,tuple) else "—"' },
+        { text: '    try: name=socket.gethostbyaddr(host)[0]' },
+        { text: '    except: name="unknown"' },
+        { text: '    print(f"  {host:<16} MAC {mac}  [{name}]")' },
+        { text: '    for p in scan_host(host): print(f"    PORT {p:<6} [{SERVICES.get(p,\"?\")}]")' },
+        { text: '    print()' },
+        { text: '' },
+        { text: 'input("\\nDone! Press Enter to close...")' }
+      ]
+    }]
+  },
+
+  {
+    id: 'py-vulntest',
+    title: 'Website Vulnerability Tester',
+    desc: 'Check a URL for security headers, TLS, cookie flags, CSP, and server leakage.',
+    tags: ['python', 'hard', 'cybersecurity', 'web'],
+    category: 'python', langs: ['py'], difficulty: 'hard',
+    phases: [{
+      id: 'py-vuln-1', name: 'Vulnerability Tester', type: 'py', icon: '🛡️',
+      filename: 'vuln_tester.py', desc: 'Passive security audit. ⚠️ Only test sites you own.',
+      lines: [
+        { text: '# ── About ───────────────────────────────────', optional: true },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'Your name / project' },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'e.g. github.com/yourname' },
+        { text: '' },
+        { text: '# ⚠️ Only test websites you own or have permission to test.', optional: true },
+        { text: '# pip install requests', optional: true },
+        { text: 'import requests, sys', tip: { title: '📦 requests', body: 'Fetch HTTP responses and inspect headers — where most security info lives.' }},
+        { text: '' },
+        { text: 'target=input("Enter target URL (e.g. https://example.com): ").strip()', tip: { title: '⌨️ input() config', body: 'Any valid URL. http:// will be auto-upgraded to https://.' }},
+        { text: 'if not target.startswith("http"): target="https://"+target' },
+        { text: '' },
+        { text: 'results=[]' },
+        { text: 'def check(name,passed,detail=""): results.append(("✅ PASS" if passed else "❌ FAIL",name,detail))', tip: { title: '🧾 check() helper', body: 'Logs pass/fail for each security property. Failures show detail.' }},
+        { text: '' },
+        { text: 'print(f"\\nScanning {target}...")' },
+        { text: 'try:' },
+        { text: '    r=requests.get(target,timeout=10,allow_redirects=True,headers={"User-Agent":"SecurityAudit/1.0"})' },
+        { text: 'except requests.exceptions.SSLError as e: check("TLS",False,str(e)[:80]); sys.exit()' },
+        { text: 'except Exception as e: print(f"Cannot reach: {e}"); sys.exit()' },
+        { text: '' },
+        { text: 'h=r.headers' },
+        { text: 'check("HTTPS",                    r.url.startswith("https://"),r.url)', tip: { title: '🔒 Security checks', body: 'Each check tests one property. HTTPS = encrypted transit. HSTS = stays HTTPS. Headers = defence configs.' }},
+        { text: 'check("Strict-Transport-Security","Strict-Transport-Security" in h,h.get("Strict-Transport-Security","not set"))' },
+        { text: 'check("X-Content-Type-Options",   h.get("X-Content-Type-Options","")=="nosniff",h.get("X-Content-Type-Options","not set"))' },
+        { text: 'check("X-Frame-Options",          "X-Frame-Options" in h,h.get("X-Frame-Options","not set"))' },
+        { text: 'check("Referrer-Policy",           "Referrer-Policy" in h,h.get("Referrer-Policy","not set"))' },
+        { text: 'csp=h.get("Content-Security-Policy","")' },
+        { text: 'check("Content-Security-Policy",  bool(csp),csp[:80] or "not set")' },
+        { text: 'if csp: check("CSP no unsafe-inline","unsafe-inline" not in csp)' },
+        { text: 'server=h.get("Server","")' },
+        { text: 'check("Server not verbose",       not any(v in server for v in ["Apache/","nginx/","IIS/"]),server or "(good)")' },
+        { text: 'check("X-Powered-By hidden",      "X-Powered-By" not in h,h.get("X-Powered-By","(good)"))' },
+        { text: 'for name,_ in r.cookies.items():', tip: { title: '🍪 Cookie flags', body: 'Secure=HTTPS only. HttpOnly=JS blocked. SameSite=CSRF protection.' }},
+        { text: '    raw=h.get("Set-Cookie","")' },
+        { text: '    check(f"Cookie {name} Secure","Secure" in raw)' },
+        { text: '    check(f"Cookie {name} HttpOnly","HttpOnly" in raw)' },
+        { text: '    check(f"Cookie {name} SameSite","SameSite" in raw)' },
+        { text: 'SEP="="*60; passed=sum(1 for s,_,_ in results if "PASS" in s)' },
+        { text: 'print(f"\\n{SEP}\\n  SECURITY REPORT — {target}")' },
+        { text: 'print(f"  Status {r.status_code} | {passed}/{len(results)} checks passed\\n{SEP}")' },
+        { text: 'for status,name,detail in results:' },
+        { text: '    print(f"  {status}  {name}")' },
+        { text: '    if detail and "FAIL" in status: print(f"         → {detail[:70]}")' },
+        { text: 'print(SEP)' },
+        { text: '' },
+        { text: 'input("\\nDone! Press Enter to close...")' }
+      ]
+    }]
+  }
+
 ];
 
 // ════════════════════════════════════════════════════
@@ -2733,7 +3265,10 @@ function setCategory(cat) {
 function renderHome() {
   const grid = document.getElementById('templates-grid');
   grid.innerHTML = '';
-  const filtered = TEMPLATES.filter(t => (t.category || 'web') === currentCategory);
+  const DIFF_ORDER = { easy: 0, medium: 1, hard: 2 };
+  const filtered = TEMPLATES
+    .filter(t => (t.category || 'web') === currentCategory)
+    .sort((a, b) => (DIFF_ORDER[a.difficulty||'medium']||1) - (DIFF_ORDER[b.difficulty||'medium']||1));
   filtered.forEach((t, i) => {
     const types = t.langs || [...new Set(t.phases.map(p => p.type))];
     const diffBadge = t.difficulty ? `<span class="diff-badge ${t.difficulty}">${t.difficulty}</span>` : '';
@@ -3228,16 +3763,19 @@ function renderLine(li) {
       const ch = target[ci];
       const s = mk('span','char');
       const tc = typed[ci];
+      const synCls = synChars[ci] ? synChars[ci].cls : '';
       if (isCur && ci === typed.length) {
+        // Cursor position: dim green + cursor
         s.classList.add('pending','cursor-before');
-        // Show pending char in syntax colour even at cursor position
-        if (synChars[ci]) s.classList.add(synChars[ci].cls || 'pending');
       } else if (tc === undefined) {
-        // Pending — apply syntax highlight colour
-        s.classList.add(synChars[ci] ? synChars[ci].cls || 'pending' : 'pending');
+        // Not yet typed: dim green (pending), no syntax colour
+        s.classList.add('pending');
       } else if (tc === ch) {
+        // Typed correctly: bright green base + syntax colour override via CSS
         s.classList.add('correct');
+        if (synCls) s.classList.add(synCls);
       } else {
+        // Wrong: red error
         s.classList.add('error');
       }
       s.textContent = ch === ' ' ? '\u00a0' : ch;
