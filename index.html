@@ -202,40 +202,39 @@
   .colour-swatch-sm:hover::after { content: attr(data-hex); position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #111; border: 1px solid #333; padding: 2px 6px; font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.58rem; color: #eee; white-space: nowrap; z-index: 10; pointer-events: none; }
   .colour-formats { font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.65rem; color: #666; line-height: 1.8; }
   .colour-formats span { color: var(--blue); }
-  /* ── Syntax highlighting colours — standard editor palette (One Dark / VS Code) ── */
+  /* ── GitHub Dark syntax theme (Primer .pl-* token system) ── */
+  /* Exact hex values from github.com/primer/github-syntax-dark         */
   :root {
-    /* JS / Python keywords: const, return, def, if, for */
-    --syn-keyword:  #C678DD;  /* purple    */
-    /* Strings: "hello", 'world', `template` */
-    --syn-string:   #98C379;  /* green     */
-    /* Numbers: 42, 3.14 */
-    --syn-number:   #D19A66;  /* orange    */
-    /* Comments: // # /* */
-    --syn-comment:  #5C6370;  /* grey      */
-    /* HTML tags: <div>, <p>, <span> */
-    --syn-tag:      #E06C75;  /* red/coral */
-    /* HTML attribute names: class, href, id */
-    --syn-attr:     #D19A66;  /* orange    */
-    /* HTML attribute values: "main", "active" — same as strings */
-    --syn-attrval:  #98C379;  /* green     */
-    /* Functions / method names */
-    --syn-func:     #61AFEF;  /* blue      */
-    /* Built-ins: print, len, document, Math */
-    --syn-builtin:  #56B6C2;  /* cyan      */
-    /* Operators: = + - * */
-    --syn-operator: #ABB2BF;  /* white/grey */
-    /* Brackets, braces, punctuation */
-    --syn-punct:    #ABB2BF;  /* white/grey */
-    /* Class names: MyClass, Animal */
-    --syn-class:    #E5C07B;  /* yellow    */
-    /* CSS property names: color, font-size */
-    --syn-prop:     #56B6C2;  /* cyan/light-blue */
-    /* CSS values: red, 20px, bold */
-    --syn-value:    #98C379;  /* green     */
-    /* CSS selectors: .card, #hero, body */
-    --syn-selector: #E5C07B;  /* yellow    */
-    /* DOCTYPE, special keywords */
-    --syn-special:  #C678DD;  /* purple    */
+    /* Keywords: .pl-k — if, for, const, def, return, import            */
+    --syn-keyword:  #ff7b72;  /* coral red   — GitHub .pl-k             */
+    /* Strings: .pl-s — "hello", 'world', template literals             */
+    --syn-string:   #a5d6ff;  /* light blue  — GitHub .pl-s             */
+    /* Numbers: .pl-c1 — 42, 3.14, 0xff                                 */
+    --syn-number:   #79c0ff;  /* blue        — GitHub .pl-c1 numeric    */
+    /* Comments: .pl-c — // # /* */
+    --syn-comment:  #8b949e;  /* grey        — GitHub .pl-c             */
+    /* HTML/XML tags: .pl-ent — <div>, <p>, <span>                      */
+    --syn-tag:      #7ee787;  /* green       — GitHub .pl-ent           */
+    /* Attribute names: .pl-e — class, href, id                         */
+    --syn-attr:     #79c0ff;  /* blue        — GitHub .pl-e             */
+    /* Attribute values — "main", "active"                              */
+    --syn-attrval:  #a5d6ff;  /* light blue  — same as strings          */
+    /* Functions/methods: .pl-en — console.log, def greet               */
+    --syn-func:     #d2a8ff;  /* purple      — GitHub .pl-en            */
+    /* Built-ins/types: True, False, None, print, document              */
+    --syn-builtin:  #ffa657;  /* orange      — GitHub .pl-c1 built-in   */
+    /* Operators: = + - * (shared with .pl-k subset)                    */
+    --syn-operator: #ff7b72;  /* coral red   — GitHub .pl-k             */
+    /* Punctuation: { } ( ) [ ] ;                                       */
+    --syn-punct:    #c9d1d9;  /* off-white   — GitHub default text       */
+    /* Class names: MyClass, Animal                                     */
+    --syn-class:    #f0883e;  /* warm orange — GitHub .pl-en class       */
+    /* CSS property names: color, font-size                             */
+    --syn-prop:     #79c0ff;  /* blue        — GitHub .pl-c1 property    */
+    /* CSS values: red, 20px, bold                                      */
+    --syn-value:    #a5d6ff;  /* light blue  — GitHub .pl-s value        */
+    /* CSS selectors: .card, #hero, body                                */
+    --syn-selector: #7ee787;  /* green       — GitHub .pl-ent selector   */
   }
   .char.sh-keyword  { color: var(--syn-keyword); }
   .char.sh-string   { color: var(--syn-string); }
@@ -243,6 +242,7 @@
   .char.sh-comment  { color: var(--syn-comment); }
   .char.sh-tag      { color: var(--syn-tag); }
   .char.sh-attr     { color: var(--syn-attr); }
+  .char.sh-attrval  { color: var(--syn-attrval); }
   .char.sh-func     { color: var(--syn-func); }
   .char.sh-builtin  { color: var(--syn-builtin); }
   .char.sh-operator { color: var(--syn-operator); }
@@ -251,16 +251,14 @@
   .char.sh-prop     { color: var(--syn-prop); }
   .char.sh-value    { color: var(--syn-value); }
   .char.sh-selector { color: var(--syn-selector); }
-  /* sh-attrval = HTML attribute values — same as strings (green) */
-  .char.sh-attrval  { color: var(--syn-string); }
-  .char.correct.sh-attrval { color: var(--syn-string); }
-  /* Typed correctly — show the syntax colour (same palette, full brightness) */
+  /* Typed correctly — same GitHub colours, full brightness */
   .char.correct.sh-keyword  { color: var(--syn-keyword); }
   .char.correct.sh-string   { color: var(--syn-string); }
   .char.correct.sh-number   { color: var(--syn-number); }
-  .char.correct.sh-comment  { color: #7C7C8A; }
+  .char.correct.sh-comment  { color: #6e7681; }
   .char.correct.sh-tag      { color: var(--syn-tag); }
   .char.correct.sh-attr     { color: var(--syn-attr); }
+  .char.correct.sh-attrval  { color: var(--syn-attrval); }
   .char.correct.sh-func     { color: var(--syn-func); }
   .char.correct.sh-builtin  { color: var(--syn-builtin); }
   .char.correct.sh-operator { color: var(--syn-operator); }
