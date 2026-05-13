@@ -202,22 +202,40 @@
   .colour-swatch-sm:hover::after { content: attr(data-hex); position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #111; border: 1px solid #333; padding: 2px 6px; font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.58rem; color: #eee; white-space: nowrap; z-index: 10; pointer-events: none; }
   .colour-formats { font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.65rem; color: #666; line-height: 1.8; }
   .colour-formats span { color: var(--blue); }
-  /* ── Syntax highlighting colours (pending state) ── */
+  /* ── Syntax highlighting colours — standard editor palette (One Dark / VS Code) ── */
   :root {
-    --syn-keyword:  #c792ea;  /* purple  — keywords: def, if, for, const, function */
-    --syn-string:   #c3e88d;  /* green   — strings and template literals */
-    --syn-number:   #f78c6c;  /* orange  — numeric literals */
-    --syn-comment:  #546e7a;  /* grey    — // and # comments */
-    --syn-tag:      #f07178;  /* coral   — HTML tags */
-    --syn-attr:     #ffcb6b;  /* amber   — HTML attributes */
-    --syn-func:     #82aaff;  /* blue    — function/method names */
-    --syn-builtin:  #89ddff;  /* cyan    — built-ins: print, len, True */
-    --syn-operator: #89ddff;  /* cyan    — operators: = + - * */
-    --syn-punct:    #89ddff;  /* cyan    — brackets, braces */
-    --syn-class:    #ffcb6b;  /* amber   — class names */
-    --syn-prop:     #f07178;  /* coral   — CSS properties */
-    --syn-value:    #c3e88d;  /* green   — CSS values */
-    --syn-selector: #c792ea;  /* purple  — CSS selectors */
+    /* JS / Python keywords: const, return, def, if, for */
+    --syn-keyword:  #C678DD;  /* purple    */
+    /* Strings: "hello", 'world', `template` */
+    --syn-string:   #98C379;  /* green     */
+    /* Numbers: 42, 3.14 */
+    --syn-number:   #D19A66;  /* orange    */
+    /* Comments: // # /* */
+    --syn-comment:  #5C6370;  /* grey      */
+    /* HTML tags: <div>, <p>, <span> */
+    --syn-tag:      #E06C75;  /* red/coral */
+    /* HTML attribute names: class, href, id */
+    --syn-attr:     #D19A66;  /* orange    */
+    /* HTML attribute values: "main", "active" — same as strings */
+    --syn-attrval:  #98C379;  /* green     */
+    /* Functions / method names */
+    --syn-func:     #61AFEF;  /* blue      */
+    /* Built-ins: print, len, document, Math */
+    --syn-builtin:  #56B6C2;  /* cyan      */
+    /* Operators: = + - * */
+    --syn-operator: #ABB2BF;  /* white/grey */
+    /* Brackets, braces, punctuation */
+    --syn-punct:    #ABB2BF;  /* white/grey */
+    /* Class names: MyClass, Animal */
+    --syn-class:    #E5C07B;  /* yellow    */
+    /* CSS property names: color, font-size */
+    --syn-prop:     #56B6C2;  /* cyan/light-blue */
+    /* CSS values: red, 20px, bold */
+    --syn-value:    #98C379;  /* green     */
+    /* CSS selectors: .card, #hero, body */
+    --syn-selector: #E5C07B;  /* yellow    */
+    /* DOCTYPE, special keywords */
+    --syn-special:  #C678DD;  /* purple    */
   }
   .char.sh-keyword  { color: var(--syn-keyword); }
   .char.sh-string   { color: var(--syn-string); }
@@ -233,11 +251,14 @@
   .char.sh-prop     { color: var(--syn-prop); }
   .char.sh-value    { color: var(--syn-value); }
   .char.sh-selector { color: var(--syn-selector); }
-  /* Typed chars: override correct green with syntax colour */
+  /* sh-attrval = HTML attribute values — same as strings (green) */
+  .char.sh-attrval  { color: var(--syn-string); }
+  .char.correct.sh-attrval { color: var(--syn-string); }
+  /* Typed correctly — show the syntax colour (same palette, full brightness) */
   .char.correct.sh-keyword  { color: var(--syn-keyword); }
   .char.correct.sh-string   { color: var(--syn-string); }
   .char.correct.sh-number   { color: var(--syn-number); }
-  .char.correct.sh-comment  { color: #6a8a6a; }
+  .char.correct.sh-comment  { color: #7C7C8A; }
   .char.correct.sh-tag      { color: var(--syn-tag); }
   .char.correct.sh-attr     { color: var(--syn-attr); }
   .char.correct.sh-func     { color: var(--syn-func); }
