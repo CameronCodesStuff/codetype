@@ -202,6 +202,37 @@
   .colour-swatch-sm:hover::after { content: attr(data-hex); position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #111; border: 1px solid #333; padding: 2px 6px; font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.58rem; color: #eee; white-space: nowrap; z-index: 10; pointer-events: none; }
   .colour-formats { font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 0.65rem; color: #666; line-height: 1.8; }
   .colour-formats span { color: var(--blue); }
+  /* ── Syntax highlighting colours (pending state) ── */
+  :root {
+    --syn-keyword:  #c792ea;  /* purple  — keywords: def, if, for, const, function */
+    --syn-string:   #c3e88d;  /* green   — strings and template literals */
+    --syn-number:   #f78c6c;  /* orange  — numeric literals */
+    --syn-comment:  #546e7a;  /* grey    — // and # comments */
+    --syn-tag:      #f07178;  /* coral   — HTML tags */
+    --syn-attr:     #ffcb6b;  /* amber   — HTML attributes */
+    --syn-func:     #82aaff;  /* blue    — function/method names */
+    --syn-builtin:  #89ddff;  /* cyan    — built-ins: print, len, True */
+    --syn-operator: #89ddff;  /* cyan    — operators: = + - * */
+    --syn-punct:    #89ddff;  /* cyan    — brackets, braces */
+    --syn-class:    #ffcb6b;  /* amber   — class names */
+    --syn-prop:     #f07178;  /* coral   — CSS properties */
+    --syn-value:    #c3e88d;  /* green   — CSS values */
+    --syn-selector: #c792ea;  /* purple  — CSS selectors */
+  }
+  .char.sh-keyword  { color: var(--syn-keyword); }
+  .char.sh-string   { color: var(--syn-string); }
+  .char.sh-number   { color: var(--syn-number); }
+  .char.sh-comment  { color: var(--syn-comment); }
+  .char.sh-tag      { color: var(--syn-tag); }
+  .char.sh-attr     { color: var(--syn-attr); }
+  .char.sh-func     { color: var(--syn-func); }
+  .char.sh-builtin  { color: var(--syn-builtin); }
+  .char.sh-operator { color: var(--syn-operator); }
+  .char.sh-punct    { color: var(--syn-punct); }
+  .char.sh-class    { color: var(--syn-class); }
+  .char.sh-prop     { color: var(--syn-prop); }
+  .char.sh-value    { color: var(--syn-value); }
+  .char.sh-selector { color: var(--syn-selector); }
   @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
 
   .char.free { color: #a78bfa; }           /* user's own freeform content */
@@ -2194,6 +2225,466 @@ const TEMPLATES = [
       ]
     }]
   },
+
+  // ══════════════════════════════════════════════════
+  // WEB: HTML BASICS REFERENCE
+  // ══════════════════════════════════════════════════
+  {
+    id: 'html-basics',
+    title: 'HTML Basics Reference',
+    desc: 'Every core HTML element — text, links, images, lists, tables, forms, and semantic tags.',
+    tags: ['html', 'beginner', 'reference'],
+    category: 'web',
+    langs: ['html'],
+    difficulty: 'easy',
+    phases: [{
+      id: 'html-basics-1', name: 'HTML Basics', type: 'html', icon: '📄',
+      filename: 'html_basics.html',
+      desc: 'A living reference page covering every essential HTML element with working examples.',
+      lines: [
+        { text: '<!DOCTYPE html>' },
+        { text: '<html lang="en">' },
+        { text: '<head>' },
+        { text: '  <meta charset="UTF-8">' },
+        { text: '  <title>HTML Basics Reference</title>' },
+        { text: '  <style>',
+          tip: { title: '🎨 Inline styles', body: 'For a reference page it\'s fine to put CSS directly in the HTML file inside a <code>&lt;style&gt;</code> tag in the head.' }},
+        { text: '    body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.7; }' },
+        { text: '    h1, h2, h3 { color: #222; margin-top: 2em; }' },
+        { text: '    code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }' },
+        { text: '    table { border-collapse: collapse; width: 100%; }' },
+        { text: '    td, th { border: 1px solid #ddd; padding: 8px 12px; }' },
+        { text: '    th { background: #f5f5f5; }' },
+        { text: '  </style>' },
+        { text: '</head>' },
+        { text: '<body>' },
+        { text: '' },
+        { text: '  <!-- ── Text elements ────────────────────── -->', optional: true },
+        { text: '  <h1>HTML Basics Reference</h1>',
+          tip: { title: '📰 Heading hierarchy', body: 'h1 = most important, h6 = least. Use them in order — don\'t skip from h1 to h4. One h1 per page for SEO. Headings define document structure, not size.' }},
+        { text: '  <h2>Text Elements</h2>' },
+        { text: '  <p>A paragraph of <strong>bold text</strong> and <em>italic text</em>.</p>',
+          tip: { title: '💪 strong vs em', body: '<code>&lt;strong&gt;</code> = bold + semantic importance. <code>&lt;em&gt;</code> = italic + emphasis. Prefer these over <code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> which are purely visual.' }},
+        { text: '  <p>Text can be <mark>highlighted</mark> or <del>struck through</del>.</p>',
+          tip: { title: '🖍️ mark & del', body: '<code>&lt;mark&gt;</code> = yellow highlight (like a marker pen). <code>&lt;del&gt;</code> = strikethrough — shows content that was removed. <code>&lt;ins&gt;</code> = underline for inserted content.' }},
+        { text: '  <p>Superscript: H<sup>2</sup>O. Subscript: x<sub>n</sub>.</p>',
+          tip: { title: '↑↓ sup & sub', body: '<code>&lt;sup&gt;</code> = superscript (e.g. footnotes, exponents). <code>&lt;sub&gt;</code> = subscript (e.g. chemical formulas). Both are inline elements.' }},
+        { text: '  <p>Inline code: <code>print("hello")</code></p>',
+          tip: { title: '💻 code element', body: '<code>&lt;code&gt;</code> marks inline code snippets. For multi-line code use <code>&lt;pre&gt;&lt;code&gt;</code>. Screen readers announce it differently from normal text.' }},
+        { text: '  <blockquote>A block quotation stands alone,</blockquote>',
+          tip: { title: '💬 blockquote', body: '<code>&lt;blockquote&gt;</code> is for longer quotes. Use <code>cite="url"</code> to attribute the source. It renders indented by default.' }},
+        { text: '  <pre>Preformatted  text</pre>',
+          tip: { title: '📐 pre', body: '<code>&lt;pre&gt;</code> preserves whitespace and line breaks exactly as written. Used for code blocks, ASCII art, anything where spacing matters.' }},
+        { text: '  <hr>',
+          tip: { title: '─ hr — horizontal rule', body: 'A thematic break — a horizontal line. Use it to separate distinct sections of content, not purely for decoration.' }},
+        { text: '' },
+        { text: '  <!-- ── Links ────────────────────────────── -->', optional: true },
+        { text: '  <h2>Links</h2>' },
+        { text: '  <a href="https://example.com">External link</a>',
+          tip: { title: '🔗 anchor element', body: 'The <code>href</code> attribute sets the destination. For external links add <code>target="_blank" rel="noopener noreferrer"</code> to open in a new tab safely.' }},
+        { text: '  <a href="#section2">Jump to section 2</a>',
+          tip: { title: '⚓ Fragment links', body: '<code>href="#id"</code> jumps to any element with that id on the same page — great for navigation and back-to-top links. The <code>#</code> is called a fragment identifier.' }},
+        { text: '  <a href="mailto:hello@example.com">Send email</a>',
+          tip: { title: '📧 mailto links', body: '<code>mailto:</code> opens the user\'s email client with the To field pre-filled. Also works with <code>tel:</code> for phone numbers on mobile.' }},
+        { text: '  <a href="file.pdf" download>Download PDF</a>',
+          tip: { title: '⬇️ download attribute', body: 'Adding the <code>download</code> attribute makes the browser download the file instead of opening it. You can give it a value to set the download filename: <code>download="myfile.pdf"</code>.' }},
+        { text: '' },
+        { text: '  <!-- ── Images ───────────────────────────── -->', optional: true },
+        { text: '  <h2>Images</h2>' },
+        { text: '  <img src="https://picsum.photos/400/200" alt="Sample image" width="400" height="200">',
+          tip: { title: '🖼️ img element', body: 'Always include <code>alt</code> for accessibility. Set <code>width</code> and <code>height</code> in HTML to prevent layout shift while the image loads. Use CSS for responsive sizing.' }},
+        { text: '  <figure>',
+          tip: { title: '🖼️ figure + figcaption', body: '<code>&lt;figure&gt;</code> groups an image with its caption. <code>&lt;figcaption&gt;</code> is the visible caption. Semantic — screen readers associate them correctly.' }},
+        { text: '    <img src="https://picsum.photos/300/150" alt="Captioned image">' },
+        { text: '    <figcaption>Fig 1. A caption for this image.</figcaption>' },
+        { text: '  </figure>' },
+        { text: '' },
+        { text: '  <!-- ── Lists ────────────────────────────── -->', optional: true },
+        { text: '  <h2>Lists</h2>' },
+        { text: '  <ul>',
+          tip: { title: '📋 ul — unordered list', body: 'Bulleted list. Each item is an <code>&lt;li&gt;</code>. Use for items where order doesn\'t matter. CSS can change the bullet style with <code>list-style-type</code>.' }},
+        { text: '    <li>First bullet</li>' },
+        { text: '    <li>Second bullet</li>' },
+        { text: '    <li>Third bullet</li>' },
+        { text: '  </ul>' },
+        { text: '  <ol>',
+          tip: { title: '🔢 ol — ordered list', body: 'Numbered list. <code>type="A"</code> = letters, <code>type="I"</code> = Roman numerals. <code>start="3"</code> starts counting from 3. <code>reversed</code> counts down.' }},
+        { text: '    <li>Step one</li>' },
+        { text: '    <li>Step two</li>' },
+        { text: '    <li>Step three</li>' },
+        { text: '  </ol>' },
+        { text: '  <dl>',
+          tip: { title: '📖 dl — description list', body: 'A list of term-definition pairs. <code>&lt;dt&gt;</code> = term, <code>&lt;dd&gt;</code> = definition. Perfect for glossaries, metadata, and key-value displays.' }},
+        { text: '    <dt>HTML</dt>' },
+        { text: '    <dd>HyperText Markup Language</dd>' },
+        { text: '    <dt>CSS</dt>' },
+        { text: '    <dd>Cascading Style Sheets</dd>' },
+        { text: '  </dl>' },
+        { text: '' },
+        { text: '  <!-- ── Tables ───────────────────────────── -->', optional: true },
+        { text: '  <h2>Tables</h2>' },
+        { text: '  <table>',
+          tip: { title: '📊 table structure', body: 'Use <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;tfoot&gt;</code> to organise sections. <code>&lt;th&gt;</code> = header cell (bold+centered by default). <code>&lt;td&gt;</code> = data cell.' }},
+        { text: '    <thead>' },
+        { text: '      <tr><th>Name</th><th>Age</th><th>City</th></tr>' },
+        { text: '    </thead>' },
+        { text: '    <tbody>' },
+        { text: '      <tr><td>Alice</td><td>28</td><td>London</td></tr>',
+          tip: { title: '📐 colspan & rowspan', body: 'Add <code>colspan="2"</code> to make a cell span 2 columns. <code>rowspan="3"</code> spans 3 rows. Useful for merged header cells.' }},
+        { text: '      <tr><td>Bob</td><td>34</td><td>Paris</td></tr>' },
+        { text: '    </tbody>' },
+        { text: '  </table>' },
+        { text: '' },
+        { text: '  <!-- ── Forms ────────────────────────────── -->', optional: true },
+        { text: '  <h2>Forms</h2>' },
+        { text: '  <form action="/submit" method="post">',
+          tip: { title: '📝 form element', body: '<code>action</code> = where to send data. <code>method="post"</code> for sensitive data (passwords, payments). <code>method="get"</code> puts data in the URL (OK for search). Always use a <code>&lt;label&gt;</code> for every input.' }},
+        { text: '    <label for="name">Name:</label>' },
+        { text: '    <input type="text" id="name" name="name" placeholder="Enter name" required>',
+          tip: { title: '🔤 input types', body: 'Common types: <code>text</code>, <code>email</code>, <code>password</code>, <code>number</code>, <code>date</code>, <code>checkbox</code>, <code>radio</code>, <code>file</code>, <code>range</code>, <code>color</code>. The type changes keyboard on mobile too.' }},
+        { text: '    <label for="email">Email:</label>' },
+        { text: '    <input type="email" id="email" name="email" placeholder="you@example.com">' },
+        { text: '    <label for="msg">Message:</label>' },
+        { text: '    <textarea id="msg" name="msg" rows="4" placeholder="Your message..."></textarea>',
+          tip: { title: '📝 textarea', body: '<code>&lt;textarea&gt;</code> is a multi-line text box. <code>rows</code> sets the visible height. Unlike <code>&lt;input&gt;</code>, it needs a closing tag — content goes between the tags.' }},
+        { text: '    <label for="country">Country:</label>' },
+        { text: '    <select id="country" name="country">',
+          tip: { title: '📋 select dropdown', body: '<code>&lt;optgroup label="..."&gt;</code> groups options with a label. Add <code>multiple</code> to allow selecting several. <code>size="3"</code> shows it as a list box.' }},
+        { text: '      <option value="">-- choose --</option>' },
+        { text: '      <option value="uk">United Kingdom</option>' },
+        { text: '      <option value="us">United States</option>' },
+        { text: '    </select>' },
+        { text: '    <button type="submit">Submit</button>' },
+        { text: '  </form>' },
+        { text: '' },
+        { text: '  <!-- ── Semantic layout ─────────────────── -->', optional: true },
+        { text: '  <h2>Semantic Layout</h2>' },
+        { text: '  <header><p>Site header / navigation area</p></header>',
+          tip: { title: '🏷️ Semantic elements', body: 'These elements carry meaning: <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>. They help search engines and screen readers understand page structure. Always prefer them over <code>&lt;div&gt;</code> when the role is clear.' }},
+        { text: '  <nav><p>Navigation links go here</p></nav>' },
+        { text: '  <main>' },
+        { text: '    <article><p>Self-contained content (blog post, news story)</p></article>' },
+        { text: '    <section><p>Thematic grouping within main content</p></section>' },
+        { text: '    <aside><p>Related sidebar content</p></aside>' },
+        { text: '  </main>' },
+        { text: '  <footer><p>Site footer — copyright, links</p></footer>' },
+        { text: '' },
+        { text: '  <!-- ── Media ────────────────────────────── -->', optional: true },
+        { text: '  <h2>Media</h2>' },
+        { text: '  <video src="video.mp4" controls width="400">',
+          tip: { title: '🎬 video element', body: '<code>controls</code> shows play/pause buttons. <code>autoplay</code> plays on load. <code>loop</code> repeats. <code>muted</code> required for autoplay in most browsers. Use multiple <code>&lt;source&gt;</code> tags for browser compatibility.' }},
+        { text: '    Your browser does not support video.' },
+        { text: '  </video>' },
+        { text: '  <audio src="audio.mp3" controls>',
+          tip: { title: '🔊 audio element', body: 'Same attributes as video. Provide a fallback message inside the tag for old browsers. Use <code>&lt;source&gt;</code> elements to offer multiple formats (mp3 + ogg).' }},
+        { text: '    Your browser does not support audio.' },
+        { text: '  </audio>' },
+        { text: '' },
+        { text: '</body>' },
+        { text: '</html>' },
+      ]
+    }]
+  },
+
+  // ══════════════════════════════════════════════════
+  // WEB: CSS BASICS REFERENCE
+  // ══════════════════════════════════════════════════
+  {
+    id: 'css-basics',
+    title: 'CSS Basics Reference',
+    desc: 'Selectors, the box model, flexbox, grid, transitions, and responsive design — all in one file.',
+    tags: ['css', 'beginner', 'reference'],
+    category: 'web',
+    langs: ['css'],
+    difficulty: 'easy',
+    phases: [{
+      id: 'css-basics-1', name: 'CSS Basics', type: 'css', icon: '🎨',
+      filename: 'css_basics.css',
+      desc: 'A commented reference covering every key CSS concept with practical examples.',
+      lines: [
+        { text: '/* ── Selectors ──────────────────────────────── */', optional: true },
+        { text: '* { box-sizing: border-box; margin: 0; padding: 0; }',
+          tip: { title: '✳️ Universal selector', body: '<code>*</code> matches everything. The reset here is applied to every element — standard practice.' }},
+        { text: 'body { font-family: sans-serif; color: #333; }',
+          tip: { title: '🏷️ Type selector', body: '<code>body</code> targets the <code>&lt;body&gt;</code> tag directly. Type selectors match elements by tag name.' }},
+        { text: '.card { background: white; }',
+          tip: { title: '🔵 Class selector', body: 'A dot prefix targets elements with that class. Most-used selector type. Multiple elements can share a class.' }},
+        { text: '#hero { font-size: 3rem; }',
+          tip: { title: '🔴 ID selector', body: 'A hash prefix targets the unique element with that id. IDs must be unique per page. High specificity — use classes instead when possible.' }},
+        { text: 'a:hover { color: blue; }',
+          tip: { title: '🖱️ Pseudo-class', body: '<code>:hover</code>, <code>:focus</code>, <code>:active</code>, <code>:visited</code>, <code>:nth-child()</code>, <code>:not()</code>, <code>:first-child</code>, <code>:last-child</code>.' }},
+        { text: 'p::first-line { font-weight: bold; }',
+          tip: { title: '✏️ Pseudo-element', body: 'Double colon. <code>::before</code> and <code>::after</code> insert content. <code>::first-line</code>, <code>::first-letter</code>, <code>::placeholder</code>, <code>::selection</code>.' }},
+        { text: 'section > p { color: #555; }',
+          tip: { title: '🔗 Combinators', body: '<code>A B</code> = B anywhere inside A. <code>A > B</code> = B direct child of A. <code>A + B</code> = B immediately after A. <code>A ~ B</code> = all B siblings after A.' }},
+        { text: '' },
+        { text: '/* ── Box Model ──────────────────────────────── */', optional: true },
+        { text: '.box {',
+          tip: { title: '📦 Box model', body: 'Every element is a box: content → padding → border → margin. With <code>box-sizing: border-box</code>, width/height include padding and border — the predictable way.' }},
+        { text: '  width: 300px;' },
+        { text: '  height: 200px;' },
+        { text: '  padding: 20px;',
+          annotation: { title: 'padding', body: 'Space inside the element. Shorthand: 1 value = all sides, 2 = top/bottom left/right, 4 = top right bottom left (clockwise).', example: 'padding: 10px;              /* all */\npadding: 10px 20px;         /* T/B  L/R */\npadding: 10px 20px 15px 5px; /* T R B L */' }},
+        { text: '  margin: 16px auto;',
+          annotation: { title: 'margin: auto', body: '<code>auto</code> left/right margin centres a block element horizontally.', example: 'margin: 0 auto;    /* centred */\nmargin: 20px;      /* all sides */\nmargin-top: 32px;  /* one side only */' }},
+        { text: '  border: 2px solid #333;',
+          annotation: { title: 'border shorthand', body: 'Format: width style colour. Style must be specified.', example: 'border: 1px solid #ccc;\nborder: 3px dashed red;\nborder: none;' }},
+        { text: '  border-radius: 8px;',
+          annotation: { title: 'border-radius', body: 'Rounds corners. A single value rounds all corners equally. Use 50% for circles.', example: 'border-radius: 4px;     /* subtle */\nborder-radius: 50%;     /* circle */\nborder-radius: 8px 0;   /* top corners only */' }},
+        { text: '}' },
+        { text: '' },
+        { text: '/* ── Typography ─────────────────────────────── */', optional: true },
+        { text: '.text {',
+          tip: { title: '🔤 Typography essentials', body: 'Control typeface, size, weight, line spacing, and letter spacing. Use relative units (rem, em) over absolute (px) for accessibility.' }},
+        { text: '  font-family: "Segoe UI", system-ui, sans-serif;',
+          annotation: { title: 'font-family stack', body: 'List fonts in preference order. Browser uses the first available. Always end with a generic family as fallback.', example: 'font-family: Georgia, serif;\nfont-family: "Courier New", monospace;\nfont-family: system-ui, sans-serif;' }},
+        { text: '  font-size: 1rem;',
+          annotation: { title: 'font-size units', body: '<code>rem</code> = relative to root (html) font size. <code>em</code> = relative to parent. <code>px</code> = absolute. Prefer rem for accessibility.', example: 'font-size: 1rem;     /* 16px default */\nfont-size: 1.25rem;  /* 20px */\nfont-size: clamp(1rem, 2.5vw, 2rem); /* responsive */' }},
+        { text: '  font-weight: 400;',
+          annotation: { title: 'font-weight', body: '100=thin, 400=normal, 700=bold, 900=black. Named values: normal, bold, bolder, lighter.', example: 'font-weight: 300;  /* light */\nfont-weight: 400;  /* normal */\nfont-weight: 700;  /* bold */' }},
+        { text: '  line-height: 1.6;',
+          annotation: { title: 'line-height', body: 'Unitless values are recommended — they scale with font-size. 1.4–1.8 is comfortable for body text.', example: 'line-height: 1.2;  /* tight */\nline-height: 1.6;  /* comfortable */\nline-height: 2;    /* very spacious */' }},
+        { text: '  letter-spacing: 0.02em;' },
+        { text: '  text-transform: uppercase;',
+          annotation: { title: 'text-transform', body: 'Transforms text without changing the HTML.', example: 'text-transform: uppercase;\ntext-transform: lowercase;\ntext-transform: capitalize;' }},
+        { text: '}' },
+        { text: '' },
+        { text: '/* ── Flexbox ────────────────────────────────── */', optional: true },
+        { text: '.flex-container {',
+          tip: { title: '🧲 Flexbox', body: 'Set <code>display: flex</code> on the parent. Children become flex items. The main axis is horizontal by default. Use <code>flex-direction: column</code> for vertical.' }},
+        { text: '  display: flex;' },
+        { text: '  flex-direction: row;',
+          annotation: { title: 'flex-direction', body: 'Sets the main axis direction.', example: 'flex-direction: row;            /* → */\nflex-direction: row-reverse;    /* ← */\nflex-direction: column;         /* ↓ */\nflex-direction: column-reverse; /* ↑ */' }},
+        { text: '  justify-content: space-between;',
+          annotation: { title: 'justify-content', body: 'Aligns items along the main axis.', example: 'justify-content: flex-start;    /* pack to start */\njustify-content: center;        /* centre */\njustify-content: space-between; /* gaps between */\njustify-content: space-evenly;  /* equal gaps */' }},
+        { text: '  align-items: center;',
+          annotation: { title: 'align-items', body: 'Aligns items along the cross axis (perpendicular to flex-direction).', example: 'align-items: stretch;     /* fill height */\nalign-items: center;      /* centre */\nalign-items: flex-start;  /* top */' }},
+        { text: '  gap: 16px;',
+          tip: { title: '↔️ gap', body: 'Adds space between flex items. Simpler than using margins. Works on both axes in grid.' }},
+        { text: '  flex-wrap: wrap;',
+          tip: { title: '🔄 flex-wrap', body: '<code>wrap</code> lets items spill onto new rows when they don\'t fit. Default is <code>nowrap</code> which squashes everything into one line.' }},
+        { text: '}' },
+        { text: '.flex-item { flex: 1; }',
+          tip: { title: '📐 flex shorthand', body: '<code>flex: 1</code> = grow to fill available space equally. <code>flex: 0 0 200px</code> = fixed 200px. <code>flex-grow</code>, <code>flex-shrink</code>, <code>flex-basis</code> individually.' }},
+        { text: '' },
+        { text: '/* ── CSS Grid ───────────────────────────────── */', optional: true },
+        { text: '.grid-container {',
+          tip: { title: '📐 CSS Grid', body: 'Grid is for two-dimensional layout. Define rows and columns with <code>grid-template-columns</code>. Items fill the grid automatically, or you can place them explicitly.' }},
+        { text: '  display: grid;' },
+        { text: '  grid-template-columns: repeat(3, 1fr);',
+          annotation: { title: 'grid-template-columns', body: '<code>1fr</code> = one fraction of available space. <code>repeat(3, 1fr)</code> = three equal columns.', example: 'grid-template-columns: 200px 1fr;      /* fixed + flex */\ngrid-template-columns: repeat(4, 1fr); /* 4 equal */\ngrid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* responsive */' }},
+        { text: '  gap: 20px;' },
+        { text: '}' },
+        { text: '.grid-span { grid-column: span 2; }',
+          tip: { title: '📐 Spanning cells', body: '<code>grid-column: span 2</code> makes an item take up 2 columns. <code>grid-row: 1 / 3</code> spans from row line 1 to 3. <code>grid-area</code> for named placement.' }},
+        { text: '' },
+        { text: '/* ── Transitions & Animations ───────────────── */', optional: true },
+        { text: '.btn {',
+          tip: { title: '✨ Transitions', body: 'Add a transition to the element, then change a property on hover/focus. The transition animates between the two states. Always include <code>transition</code> on the base element, not the :hover.' }},
+        { text: '  background: #333;', freeform: true, prefix: '  background: ', suffix: ';', placeholder: '#333',
+          annotation: { title: 'Button background', body: 'Hover to see the colour guide.', example: 'background: #333;\nbackground: #3b82f6;  /* blue */\nbackground: #22c55e;  /* green */' }},
+        { text: '  transition: background 0.3s ease, transform 0.2s;',
+          tip: { title: '🎞️ transition shorthand', body: '<code>property duration timing-function delay</code>. Comma-separate multiple properties. Common timings: <code>ease</code>, <code>linear</code>, <code>ease-in</code>, <code>ease-out</code>, <code>ease-in-out</code>.' }},
+        { text: '}' },
+        { text: '.btn:hover { background: #555; transform: translateY(-2px); }' },
+        { text: '' },
+        { text: '@keyframes fadeIn {',
+          tip: { title: '🎬 @keyframes', body: 'Define animation states with percentages (or <code>from</code>/<code>to</code>). Apply with <code>animation: name duration timing iteration</code>.' }},
+        { text: '  from { opacity: 0; transform: translateY(10px); }' },
+        { text: '  to   { opacity: 1; transform: translateY(0); }' },
+        { text: '}' },
+        { text: '.fade-in { animation: fadeIn 0.5s ease forwards; }' },
+        { text: '' },
+        { text: '/* ── Responsive / Media Queries ─────────────── */', optional: true },
+        { text: '@media (max-width: 768px) {',
+          tip: { title: '📱 Media queries', body: 'Apply styles only when conditions are met. <code>max-width</code> = at or below this width (mobile-first would use <code>min-width</code>). Can also target <code>prefers-color-scheme</code>, <code>orientation</code>, <code>print</code>.' }},
+        { text: '  .grid-container { grid-template-columns: 1fr; }',
+          tip: { title: '🔄 Mobile layout', body: 'On small screens, collapse the 3-column grid to a single column. This is the most common responsive pattern.' }},
+        { text: '  .flex-container  { flex-direction: column; }' },
+        { text: '}' },
+        { text: '' },
+        { text: '/* ── Custom properties (CSS Variables) ──────── */', optional: true },
+        { text: ':root {',
+          tip: { title: '📦 CSS Custom Properties', body: 'Define variables with <code>--name: value</code> on <code>:root</code> (or any element). Use them with <code>var(--name)</code>. Great for theming — change one value and it updates everywhere.' }},
+        { text: '  --primary:    #3b82f6;', freeform: true, prefix: '  --primary:    ', suffix: ';', placeholder: '#3b82f6',
+          annotation: { title: '--primary colour', body: 'Your main brand/accent colour. Hover for colour guide.', example: '--primary: #3b82f6;  /* blue */\n--primary: #8b5cf6;  /* purple */\n--primary: #10b981;  /* green */' }},
+        { text: '  --text:       #1a1a1a;', freeform: true, prefix: '  --text:       ', suffix: ';', placeholder: '#1a1a1a' },
+        { text: '  --bg:         #ffffff;', freeform: true, prefix: '  --bg:         ', suffix: ';', placeholder: '#ffffff' },
+        { text: '  --radius:     8px;' },
+        { text: '}' },
+        { text: '.themed-card {' },
+        { text: '  background: var(--bg);' },
+        { text: '  color: var(--text);' },
+        { text: '  border-radius: var(--radius);' },
+        { text: '}' },
+      ]
+    }]
+  },
+
+  // ══════════════════════════════════════════════════
+  // PYTHON: CLASSES & OOP
+  // ══════════════════════════════════════════════════
+  {
+    id: 'py-oop',
+    title: 'Classes & OOP',
+    desc: 'Object-oriented programming — classes, inheritance, dunder methods, and properties.',
+    tags: ['python', 'intermediate', 'fundamentals'],
+    category: 'python',
+    langs: ['py'],
+    difficulty: 'medium',
+    phases: [{
+      id: 'py-oop-1', name: 'Classes & OOP', type: 'py', icon: '🏗️',
+      filename: 'oop.py',
+      desc: 'Write your first classes, use inheritance, and learn Python\'s special methods.',
+      lines: [
+        { text: '# ── About ───────────────────────────────────', optional: true },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'Your name / project name' },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'e.g. github.com/yourname' },
+        { text: '' },
+        { text: '# ── Basic class ──────────────────────────────', optional: true },
+        { text: 'class Animal:',
+          tip: { title: '🏗️ class keyword', body: 'Defines a blueprint for objects. By convention, class names use CamelCase. The body contains methods (functions) and can define a constructor.' }},
+        { text: '    def __init__(self, name, sound):',
+          tip: { title: '__init__ constructor', body: '<code>__init__</code> runs automatically when you create an instance. <code>self</code> refers to the instance being created — always the first parameter of any method.' }},
+        { text: '        self.name  = name',
+          tip: { title: 'self.attribute', body: '<code>self.name = name</code> stores the argument as an instance attribute. Each instance has its own copy of these values.' }},
+        { text: '        self.sound = sound' },
+        { text: '    def speak(self):' },
+        { text: '        return f"{self.name} says {self.sound}!"' },
+        { text: '    def __str__(self):',
+          tip: { title: '__str__ dunder method', body: 'Called when you <code>print()</code> an object or use <code>str()</code>. Define it to give a human-readable representation. Dunder = double underscore = "magic method".' }},
+        { text: '        return f"Animal({self.name})"' },
+        { text: '    def __repr__(self):',
+          tip: { title: '__repr__ vs __str__', body: '<code>__repr__</code> is for developers — shown in the REPL, logs, and debuggers. <code>__str__</code> is for end users. If only one is defined, <code>__repr__</code> is used as fallback.' }},
+        { text: '        return f"Animal(name={self.name!r}, sound={self.sound!r})"' },
+        { text: '' },
+        { text: 'dog = Animal("Rex", "woof")' },
+        { text: 'print(dog.speak())' },
+        { text: 'print(dog)' },
+        { text: '' },
+        { text: '# ── Inheritance ──────────────────────────────', optional: true },
+        { text: 'class Dog(Animal):',
+          tip: { title: '🐾 Inheritance', body: 'Put the parent class in brackets. <code>Dog</code> inherits all methods from <code>Animal</code>. You only need to define what\'s different.' }},
+        { text: '    def __init__(self, name, breed):' },
+        { text: '        super().__init__(name, "woof")',
+          tip: { title: 'super()', body: '<code>super()</code> calls the parent class\'s method. Here it calls <code>Animal.__init__</code> so we don\'t have to repeat that code.' }},
+        { text: '        self.breed = breed' },
+        { text: '    def fetch(self):' },
+        { text: '        return f"{self.name} fetches the ball!"' },
+        { text: '' },
+        { text: 'buddy = Dog("Buddy", "Labrador")' },
+        { text: 'print(buddy.speak())   # inherited' },
+        { text: 'print(buddy.fetch())   # new method' },
+        { text: 'print(isinstance(buddy, Animal))',
+          tip: { title: 'isinstance()', body: 'Checks if an object is an instance of a class (or any of its parents). Returns True/False. Prefer over <code>type(x) == X</code>.' }},
+        { text: '' },
+        { text: '# ── Properties ───────────────────────────────', optional: true },
+        { text: 'class Circle:',
+          tip: { title: '@property decorator', body: '<code>@property</code> turns a method into a read-only attribute. The user writes <code>c.area</code> not <code>c.area()</code> — it looks like an attribute but runs code.' }},
+        { text: '    def __init__(self, radius):' },
+        { text: '        self._radius = radius' },
+        { text: '    @property' },
+        { text: '    def radius(self): return self._radius' },
+        { text: '    @radius.setter',
+          tip: { title: '@property.setter', body: 'Lets you do validation when a value is set: <code>c.radius = -1</code> would raise an error here. Keeps attributes safe without breaking the simple assignment syntax.' }},
+        { text: '    def radius(self, value):' },
+        { text: '        if value < 0: raise ValueError("radius must be positive")' },
+        { text: '        self._radius = value' },
+        { text: '    @property' },
+        { text: '    def area(self): return 3.14159 * self._radius ** 2' },
+        { text: '' },
+        { text: 'c = Circle(5)' },
+        { text: 'print(f"Area: {c.area:.2f}")' },
+        { text: '' },
+        { text: '# ── Keep terminal open ───────────────────────', optional: true },
+        { text: 'input("\\nDone! Press Enter to close...")' },
+      ]
+    }]
+  },
+
+  // ══════════════════════════════════════════════════
+  // PYTHON: ERROR HANDLING & MODULES
+  // ══════════════════════════════════════════════════
+  {
+    id: 'py-errors',
+    title: 'Error Handling & Modules',
+    desc: 'try/except/finally, custom exceptions, creating your own modules, and the standard library.',
+    tags: ['python', 'intermediate', 'fundamentals'],
+    category: 'python',
+    langs: ['py'],
+    difficulty: 'medium',
+    phases: [{
+      id: 'py-errors-1', name: 'Error Handling & Modules', type: 'py', icon: '🛡️',
+      filename: 'errors.py',
+      desc: 'Handle errors gracefully, raise your own exceptions, and explore useful stdlib modules.',
+      lines: [
+        { text: '# ── About ───────────────────────────────────', optional: true },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'Your name / project name' },
+        { text: '# ', freeform: true, prefix: '# ', suffix: '', placeholder: 'e.g. github.com/yourname' },
+        { text: '' },
+        { text: 'import os, sys, math, datetime, json, pathlib',
+          tip: { title: '📦 The standard library', body: 'Python ships with hundreds of useful modules — no install needed. <code>os</code> = filesystem, <code>math</code> = maths functions, <code>datetime</code> = dates, <code>json</code> = JSON, <code>pathlib</code> = modern file paths.' }},
+        { text: '' },
+        { text: '# ── try / except ─────────────────────────────', optional: true },
+        { text: 'try:',
+          tip: { title: '🛡️ try/except', body: 'Code in <code>try</code> runs normally. If an exception occurs, Python jumps to the matching <code>except</code> block. Without try/except, the script crashes.' }},
+        { text: '    result = 10 / 0' },
+        { text: 'except ZeroDivisionError as e:',
+          tip: { title: 'Specific exceptions', body: 'Always catch specific exception types, not bare <code>except:</code>. <code>as e</code> lets you inspect the error message. Common: <code>ValueError</code>, <code>TypeError</code>, <code>KeyError</code>, <code>FileNotFoundError</code>, <code>IndexError</code>.' }},
+        { text: '    print(f"Caught: {e}")' },
+        { text: 'else:',
+          tip: { title: 'try/else', body: '<code>else</code> runs only if no exception was raised — cleaner than putting success code inside <code>try</code>.' }},
+        { text: '    print("No error!")' },
+        { text: 'finally:',
+          tip: { title: 'finally', body: '<code>finally</code> always runs — whether an exception happened or not. Use it for cleanup (closing files, network connections) that must happen regardless.' }},
+        { text: '    print("This always runs")' },
+        { text: '' },
+        { text: '# ── Multiple except clauses ──────────────────', optional: true },
+        { text: 'def safe_divide(a, b):',
+          tip: { title: '📋 Multiple except', body: 'List multiple <code>except</code> blocks to handle different errors differently. The first matching block runs. Put more specific exceptions before more general ones.' }},
+        { text: '    try:' },
+        { text: '        return a / b' },
+        { text: '    except ZeroDivisionError:' },
+        { text: '        return "Cannot divide by zero"' },
+        { text: '    except TypeError:' },
+        { text: '        return "Invalid types"' },
+        { text: '' },
+        { text: 'print(safe_divide(10, 2))' },
+        { text: 'print(safe_divide(10, 0))' },
+        { text: '' },
+        { text: '# ── Custom exceptions ────────────────────────', optional: true },
+        { text: 'class AgeError(ValueError):',
+          tip: { title: '🔧 Custom exceptions', body: 'Subclass <code>Exception</code> (or a specific exception) to create your own. Raise them with <code>raise MyError("message")</code>. Callers can catch your specific type.' }},
+        { text: '    pass' },
+        { text: '' },
+        { text: 'def set_age(age):' },
+        { text: '    if not isinstance(age, int):' },
+        { text: '        raise TypeError("Age must be an integer")' },
+        { text: '    if age < 0 or age > 150:' },
+        { text: '        raise AgeError(f"Age {age} is out of range")' },
+        { text: '    return age' },
+        { text: '' },
+        { text: 'try: print(set_age(-5))' },
+        { text: 'except AgeError as e: print(f"AgeError: {e}")' },
+        { text: '' },
+        { text: '# ── Useful stdlib ────────────────────────────', optional: true },
+        { text: 'print(math.pi, math.sqrt(16), math.floor(3.7))',
+          tip: { title: '🔢 math module', body: 'Common: <code>math.pi</code>, <code>math.e</code>, <code>math.sqrt()</code>, <code>math.floor()</code>, <code>math.ceil()</code>, <code>math.log()</code>, <code>math.sin()</code>.' }},
+        { text: 'now = datetime.datetime.now()' },
+        { text: 'print(now.strftime("%Y-%m-%d %H:%M:%S"))',
+          tip: { title: '📅 datetime', body: '<code>datetime.now()</code> = current local time. <code>strftime</code> formats it. Common codes: <code>%Y</code>=year, <code>%m</code>=month, <code>%d</code>=day, <code>%H</code>=hour, <code>%M</code>=minute.' }},
+        { text: 'data = json.dumps({"name": "Alice", "age": 30})',
+          tip: { title: '📋 json module', body: '<code>json.dumps(obj)</code> = Python → JSON string. <code>json.loads(str)</code> = JSON string → Python. <code>json.dump/load</code> = with files.' }},
+        { text: 'print(data)' },
+        { text: 'p = pathlib.Path(".")' },
+        { text: 'print([f.name for f in p.iterdir() if f.is_file()])',
+          tip: { title: '📂 pathlib', body: '<code>pathlib.Path</code> is the modern way to work with file paths. Cleaner than <code>os.path</code>. Methods: <code>.exists()</code>, <code>.read_text()</code>, <code>.write_text()</code>, <code>.iterdir()</code>, <code>.suffix</code>, <code>.stem</code>.' }},
+        { text: '' },
+        { text: '# ── Keep terminal open ───────────────────────', optional: true },
+        { text: 'input("\\nDone! Press Enter to close...")' },
+      ]
+    }]
+  }
 ];
 
 // ════════════════════════════════════════════════════
@@ -2456,6 +2947,160 @@ function renderCodeLines() {
   scrollTo(currentLine);
 }
 
+// ════════════════════════════════════════════════════
+// SYNTAX HIGHLIGHTER
+// Returns [{text, cls}] tokens for a given line + phase type
+// Used to colour pending (not-yet-typed) characters
+// ════════════════════════════════════════════════════
+function tokenizeLine(text, type) {
+  // Returns array of {text: string, cls: string} where cls is sh-* or ''
+  if (!text) return [];
+
+  const tokens = [];
+  let i = 0;
+
+  const push = (str, cls) => { if (str) tokens.push({ text: str, cls }); };
+
+  if (type === 'py') {
+    const PY_KEYWORDS = /^(def|class|import|from|return|if|elif|else|for|while|in|not|and|or|is|None|True|False|pass|break|continue|try|except|finally|raise|with|as|lambda|yield|global|nonlocal|del|assert|async|await)\b/;
+    const PY_BUILTINS = /^(print|len|range|input|int|float|str|list|dict|set|tuple|type|isinstance|enumerate|zip|map|filter|sorted|reversed|open|round|abs|max|min|sum|bool|bytes|hex|oct|bin|chr|ord|repr|vars|dir|hasattr|getattr|setattr|id|hash|iter|next|format|super|object)\b/;
+    const PY_CLASS   = /^[A-Z][a-zA-Z0-9_]*/;
+    const PY_FUNC    = /^[a-z_][a-zA-Z0-9_]*(?=\s*\()/;
+    const PY_NUM     = /^-?\d+(\.\d+)?/;
+    const PY_STR3D   = /^("""[\s\S]*?"""|'''[\s\S]*?''')/;
+    const PY_STR1    = /^("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/;
+    const PY_FSTR    = /^f("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/;
+    const PY_COMMENT = /^#.*/;
+    const PY_OP      = /^[+\-*\/=<>!%&|^~@]+/;
+    const PY_PUNCT   = /^[\[\]{}(),.:;]/;
+
+    while (i < text.length) {
+      const rest = text.slice(i);
+      let m;
+      if ((m = PY_COMMENT.exec(rest)))   { push(m[0], 'sh-comment');  i += m[0].length; }
+      else if ((m = PY_STR3D.exec(rest))){ push(m[0], 'sh-string');   i += m[0].length; }
+      else if ((m = PY_FSTR.exec(rest))) { push(m[0], 'sh-string');   i += m[0].length; }
+      else if ((m = PY_STR1.exec(rest))) { push(m[0], 'sh-string');   i += m[0].length; }
+      else if ((m = PY_KEYWORDS.exec(rest))){push(m[0],'sh-keyword');  i += m[0].length; }
+      else if ((m = PY_BUILTINS.exec(rest))){push(m[0],'sh-builtin'); i += m[0].length; }
+      else if ((m = PY_CLASS.exec(rest))) { push(m[0], 'sh-class');   i += m[0].length; }
+      else if ((m = PY_FUNC.exec(rest)))  { push(m[0], 'sh-func');    i += m[0].length; }
+      else if ((m = PY_NUM.exec(rest)))   { push(m[0], 'sh-number');  i += m[0].length; }
+      else if ((m = PY_OP.exec(rest)))    { push(m[0], 'sh-operator');i += m[0].length; }
+      else if ((m = PY_PUNCT.exec(rest))) { push(m[0], 'sh-punct');   i += m[0].length; }
+      else { push(text[i], ''); i++; }
+    }
+    return tokens;
+  }
+
+  if (type === 'html') {
+    // Tokenise HTML: comments, tags, attributes, strings, text
+    const HTML_COMMENT = /^<!--[\s\S]*?-->/;
+    while (i < text.length) {
+      const rest = text.slice(i);
+      let m;
+      if ((m = HTML_COMMENT.exec(rest))) { push(m[0], 'sh-comment'); i += m[0].length; }
+      else if (rest[0] === '<') {
+        // Tag open
+        push('<', 'sh-tag'); i++;
+        // Optional /
+        if (i < text.length && text[i] === '/') { push('/', 'sh-tag'); i++; }
+        // Tag name
+        const nameM = /^[a-zA-Z][a-zA-Z0-9\-]*/.exec(text.slice(i));
+        if (nameM) { push(nameM[0], 'sh-tag'); i += nameM[0].length; }
+        // Attributes until >
+        while (i < text.length && text[i] !== '>') {
+          const attrRest = text.slice(i);
+          const attrName = /^\s+([a-zA-Z\-:][a-zA-Z0-9\-:._]*)/.exec(attrRest);
+          const strVal   = /^=("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/.exec(text.slice(i + (attrName ? attrName[0].length : 0)));
+          if (attrName) {
+            push(attrName[0].match(/^\s+/)[0], '');
+            push(attrName[1], 'sh-attr');
+            i += attrName[0].length;
+            if (strVal) { push('=', 'sh-operator'); push(strVal[1], 'sh-string'); i += strVal[0].length; }
+          } else { push(text[i], ''); i++; }
+        }
+        if (i < text.length && text[i] === '>') { push('>', 'sh-tag'); i++; }
+      }
+      else { push(text[i], ''); i++; }
+    }
+    return tokens;
+  }
+
+  if (type === 'css') {
+    // Tokenise CSS: selectors, properties, values, strings, comments
+    const CSS_COMMENT = /^\/\*[\s\S]*?\*\//;
+    const CSS_STRING  = /^("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/;
+    const CSS_PROP    = /^([a-z\-]+)\s*(?=:)/;
+    const CSS_UNIT    = /^-?\d+(\.\d+)?(px|em|rem|vh|vw|%|s|ms|deg|fr)?/;
+    const CSS_HEX     = /^#[0-9a-fA-F]{3,8}/;
+    const CSS_FUNC    = /^[a-zA-Z\-]+(?=\()/;
+    const CSS_SEL     = /^[.#:a-zA-Z*\[\]()=^$|~>+\s,]+(?=\s*\{)/;
+    const CSS_PUNCT   = /^[{};:,()]/;
+    const CSS_KW      = /^(inherit|initial|unset|auto|none|normal|bold|italic|solid|dashed|dotted|flex|grid|block|inline|relative|absolute|fixed|sticky|center|left|right|top|bottom|transparent|url)\b/;
+
+    while (i < text.length) {
+      const rest = text.slice(i);
+      let m;
+      if ((m = CSS_COMMENT.exec(rest))) { push(m[0], 'sh-comment');  i += m[0].length; }
+      else if ((m = CSS_STRING.exec(rest)))  { push(m[0], 'sh-string');   i += m[0].length; }
+      else if ((m = CSS_HEX.exec(rest)))     { push(m[0], 'sh-number');   i += m[0].length; }
+      else if ((m = CSS_PROP.exec(rest)))    { push(m[0], 'sh-prop');     i += m[0].length; }
+      else if ((m = CSS_KW.exec(rest)))      { push(m[0], 'sh-value');    i += m[0].length; }
+      else if ((m = CSS_FUNC.exec(rest)))    { push(m[0], 'sh-func');     i += m[0].length; }
+      else if ((m = CSS_UNIT.exec(rest)))    { push(m[0], 'sh-number');   i += m[0].length; }
+      else if ((m = CSS_PUNCT.exec(rest)))   { push(m[0], 'sh-punct');    i += m[0].length; }
+      else { push(text[i], ''); i++; }
+    }
+    return tokens;
+  }
+
+  if (type === 'js') {
+    const JS_KEYWORDS = /^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|class|extends|import|export|default|try|catch|finally|throw|typeof|instanceof|in|of|delete|void|this|super|async|await|yield|static|get|set|null|undefined|true|false)\b/;
+    const JS_BUILTINS = /^(console|document|window|Math|JSON|Array|Object|String|Number|Boolean|Date|Promise|setTimeout|setInterval|clearTimeout|clearInterval|fetch|localStorage|sessionStorage|parseInt|parseFloat|isNaN|isFinite|encodeURIComponent|decodeURIComponent|addEventListener|getElementById|querySelector)\b/;
+    const JS_CLASS   = /^[A-Z][a-zA-Z0-9_]*/;
+    const JS_FUNC    = /^[a-z_$][a-zA-Z0-9_$]*(?=\s*[=(])/;
+    const JS_TLIT    = /^`(?:[^`\\]|\\.)*`/;
+    const JS_STR     = /^("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/;
+    const JS_COMMENT = /^(\/\/.*|\/\*[\s\S]*?\*\/)/;
+    const JS_NUM     = /^-?\d+(\.\d+)?/;
+    const JS_OP      = /^[+\-*\/=<>!%&|^~?:]+/;
+    const JS_PUNCT   = /^[\[\]{}(),;.]/;
+    const JS_REGEX   = /^\/(?:[^\/\\]|\\.)+\/[gimsuy]*/;
+
+    while (i < text.length) {
+      const rest = text.slice(i);
+      let m;
+      if ((m = JS_COMMENT.exec(rest)))   { push(m[0], 'sh-comment');  i += m[0].length; }
+      else if ((m = JS_TLIT.exec(rest))) { push(m[0], 'sh-string');   i += m[0].length; }
+      else if ((m = JS_STR.exec(rest)))  { push(m[0], 'sh-string');   i += m[0].length; }
+      else if ((m = JS_KEYWORDS.exec(rest))){ push(m[0],'sh-keyword'); i += m[0].length; }
+      else if ((m = JS_BUILTINS.exec(rest))){ push(m[0],'sh-builtin'); i += m[0].length; }
+      else if ((m = JS_CLASS.exec(rest))) { push(m[0], 'sh-class');   i += m[0].length; }
+      else if ((m = JS_FUNC.exec(rest)))  { push(m[0], 'sh-func');    i += m[0].length; }
+      else if ((m = JS_NUM.exec(rest)))   { push(m[0], 'sh-number');  i += m[0].length; }
+      else if ((m = JS_OP.exec(rest)))    { push(m[0], 'sh-operator');i += m[0].length; }
+      else if ((m = JS_PUNCT.exec(rest))) { push(m[0], 'sh-punct');   i += m[0].length; }
+      else { push(text[i], ''); i++; }
+    }
+    return tokens;
+  }
+
+  // Fallback: no highlighting
+  return [{ text, cls: '' }];
+}
+
+// Expand tokens into per-character array: [{ch, cls}]
+function tokenizeToChars(text, type) {
+  const tokens = tokenizeLine(text, type);
+  const chars = [];
+  for (const { text: t, cls } of tokens) {
+    for (const ch of t) chars.push({ ch, cls });
+  }
+  // Pad/trim to match text length
+  return chars;
+}
+
 function renderLine(li) {
   const content = document.getElementById(`lc-${li}`);
   if (!content) return;
@@ -2577,14 +3222,24 @@ function renderLine(li) {
     if (isCur) { const c = mk('span','char pending cursor-before'); c.textContent = '\u00a0'; content.appendChild(c); }
   } else {
     const target = ld.text;
+    // Build per-character syntax highlighting map
+    const synChars = tokenizeToChars(target, currentPhase.type);
     for (let ci = 0; ci < target.length; ci++) {
       const ch = target[ci];
       const s = mk('span','char');
       const tc = typed[ci];
-      if (isCur && ci === typed.length) s.classList.add('pending','cursor-before');
-      else if (tc === undefined) s.classList.add('pending');
-      else if (tc === ch) s.classList.add('correct');
-      else s.classList.add('error');
+      if (isCur && ci === typed.length) {
+        s.classList.add('pending','cursor-before');
+        // Show pending char in syntax colour even at cursor position
+        if (synChars[ci]) s.classList.add(synChars[ci].cls || 'pending');
+      } else if (tc === undefined) {
+        // Pending — apply syntax highlight colour
+        s.classList.add(synChars[ci] ? synChars[ci].cls || 'pending' : 'pending');
+      } else if (tc === ch) {
+        s.classList.add('correct');
+      } else {
+        s.classList.add('error');
+      }
       s.textContent = ch === ' ' ? '\u00a0' : ch;
       content.appendChild(s);
     }
